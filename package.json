@@ -1,7 +1,7 @@
 {
   "name": "self-explain",
   "description": "self explained tools - starting with \"expect\"",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Codenautas <codenautas@googlegroups.com>",
   "repository": "codenautas/self-explain",
   "license": "MIT",
@@ -47,7 +47,7 @@
   },
   "qa-control": {
     "package-version": "0.2.0",
-    "coverage": 100,
+    "coverage": 95,
     "run-in": "both",
     "stability": "extending",
     "type": "lib"

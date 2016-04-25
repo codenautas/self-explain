@@ -77,13 +77,31 @@ function box_fail_sum_lt_mul(){
     eval(superExpect(alfa + betha > alfa*betha));
 }
 
+function box_fail_parenthesis(){
+    var alfa = 2;
+    var betha = 3;
+    eval(superExpect(!(alfa + 1 == betha)));
+}
+
 if(it.demo){
     box_ok();
-    // box_fail_1eq2();
-    var show=function(f){ try{ f(); console.log("BAD! MUST FAIL!"); }catch(err){ console.log('its ok to fail'); }};
+    var show=function(f){ 
+        try{ 
+            f(); 
+            console.log("BAD! MUST FAIL!"); 
+        }catch(err){ 
+            if(/expect.*failed.*line/.test(err.message)){
+                console.log('its ok to fail'); 
+            }else{
+                console.log('BAD ERROR',err);
+                console.log(err.stack);
+            }
+        }
+    };
     show(box_fail_1eq2);
     show(box_fail_1eq2and3neq4);
     show(box_fail_sum_lt_mul);
+    show(box_fail_parenthesis);
 }
 
 //////////////// TEST ////////////////
@@ -121,6 +139,18 @@ describe("basic operations", function(){
             ['alfa + betha > alfa*betha'],
             [2,'+', 3, '>', 2, '*', 3],
             [5, '>', 6],
+            [false]
+        ]);
+    });
+    it("inform error in negated parenthesis", function(){
+        superExpect.collect();
+        expect(box_fail_parenthesis).to.throwError(/expect.*failed.*line.*83/);
+        expect(superExpect.collected()).to.eql([
+            ['EXPECT FAILED'],
+            ['!(alfa + 1 == betha)'],
+            ['!', 2,'+', 1, '==', 3],
+            ['!', 3, '==', 3],
+            ['!', true],
             [false]
         ]);
     });
