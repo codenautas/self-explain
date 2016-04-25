@@ -98,7 +98,8 @@ describe("basic operations", function(){
         expect(superExpect.collected()).to.eql([
             ['EXPECT FAILED'],
             ['alfa == betha'],
-            [1, '==', 2]
+            [1, '==', 2],
+            [false]
         ]);
     });
     it("inform error in one simple expression", function(){
@@ -108,7 +109,8 @@ describe("basic operations", function(){
             ['EXPECT FAILED'],
             ['alfa == betha && gamma != delta'],
             [1, '==', 2, '&&', 3, '!=', 4],
-            [false, '&&', true]
+            [false, '&&', true],
+            [false]
         ]);
     });
     it("inform error in one simple expression", function(){
@@ -118,8 +120,8 @@ describe("basic operations", function(){
             ['EXPECT FAILED'],
             ['alfa + betha > alfa*betha'],
             [2,'+', 3, '>', 2, '*', 3],
-            [2,'+', 3, '>', 6],
-            [5, '>', 6]
+            [5, '>', 6],
+            [false]
         ]);
     });
 });
