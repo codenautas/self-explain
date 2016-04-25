@@ -1,11 +1,13 @@
 "use strict";
 
 var expect = require('expect.js');
+var sinon = require('sinon');
 
 var superExpect = require('../lib/self-explain.js').expect;
 
 /* intentional blank area: */
 
+// 10
 
 
 
@@ -15,6 +17,7 @@ var superExpect = require('../lib/self-explain.js').expect;
 
 
 
+// 20
 
 
 
@@ -24,6 +27,7 @@ var superExpect = require('../lib/self-explain.js').expect;
 
 
 
+// 30
 
 
 
@@ -33,11 +37,7 @@ var superExpect = require('../lib/self-explain.js').expect;
 
 
 
-
-
-
-
-
+// 40
 
 
 
@@ -51,20 +51,39 @@ var superExpect = require('../lib/self-explain.js').expect;
  * this must be in line 51          *
  ************************************/
 
-function box1(){
+function box_ok(){
     var alfa = 1;
     var betha = 1;
-    superExpect(alfa == betha);
+    eval(superExpect(alfa == betha));
 }
 
-function box2(){
+function box_fail_1eq2(){
     var alfa = 1;
     var betha = 2;
-    superExpect(alfa == betha);
+    eval(superExpect(alfa == betha));
 }
+
+if(it.demo){
+    box_ok();
+    try{
+        box_fail_1eq2();
+    }catch(err){
+        console.log('its ok to fail');
+    };
+}
+
+//////////////// TEST ////////////////
 
 describe("basic operations", function(){
     it("does nothing if true", function(){
-        box1();
+        box_ok();
+    });
+    it("inform error in one variable", function(){
+        superExpect.collect();
+        expect(box_fail_1eq2).to.throwError(/expect.*failed.*line.*63/);
+        expect(superExpect.collected()).to.eql([
+            ['expect', 'alfa == betha', 'to be thrully'],
+            [1, '==', 2]
+        ]);
     });
 });
