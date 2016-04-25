@@ -102,7 +102,7 @@ describe("basic operations", function(){
             [false]
         ]);
     });
-    it("inform error in one simple expression", function(){
+    it("inform error in one simple logical", function(){
         superExpect.collect();
         expect(box_fail_1eq2and3neq4).to.throwError(/expect.*failed.*line.*71/);
         expect(superExpect.collected()).to.eql([
@@ -113,7 +113,7 @@ describe("basic operations", function(){
             [false]
         ]);
     });
-    it("inform error in one simple expression", function(){
+    it("inform error in one simple math", function(){
         superExpect.collect();
         expect(box_fail_sum_lt_mul).to.throwError(/expect.*failed.*line.*77/);
         expect(superExpect.collected()).to.eql([
