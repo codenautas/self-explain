@@ -77,10 +77,16 @@ function box_fail_sum_lt_mul(){
     eval(superExpect(alfa + betha > alfa*betha));
 }
 
-function box_fail_parenthesis(){
+function box_fail_not_parenthesis(){
+    var alfa = 2;
+    var betha = 3; 
+    eval(superExpect(!(alfa + 1 == betha)));
+}
+
+function box_fail_arit_parenthesis(){
     var alfa = 2;
     var betha = 3;
-    eval(superExpect(!(alfa + 1 == betha)));
+    eval(superExpect((alfa - betha) * 2 + 2));
 }
 
 if(it.demo){
@@ -101,7 +107,8 @@ if(it.demo){
     show(box_fail_1eq2);
     show(box_fail_1eq2and3neq4);
     show(box_fail_sum_lt_mul);
-    show(box_fail_parenthesis);
+    show(box_fail_not_parenthesis);
+    show(box_fail_arit_parenthesis);
 }
 
 //////////////// TEST ////////////////
@@ -144,14 +151,26 @@ describe("basic operations", function(){
     });
     it("inform error in negated parenthesis", function(){
         superExpect.collect();
-        expect(box_fail_parenthesis).to.throwError(/expect.*failed.*line.*83/);
+        expect(box_fail_not_parenthesis).to.throwError(/expect.*failed.*line.*83/);
         expect(superExpect.collected()).to.eql([
             ['EXPECT FAILED'],
             ['!(alfa + 1 == betha)'],
-            ['!', 2,'+', 1, '==', 3],
-            ['!', 3, '==', 3],
-            ['!', true],
+            ['!','(', 2,'+', 1, '==', 3, ')'],
+            ['!','(', 3, '==', 3, ')'],
+            ['!', '(', true, ')'],
             [false]
+        ]);
+    });
+    it("inform error in arithmetic parenthesis", function(){
+        superExpect.collect();
+        expect(box_fail_arit_parenthesis).to.throwError(/expect.*failed.*line.*89/);
+        expect(superExpect.collected()).to.eql([
+            ['EXPECT FAILED'],
+            ['(alfa - betha) * 2 + 2'],
+            ['(', 2,'-', 3, ')', '*', 2, '+', 2],
+            ['(', -1, ')', '*', 2, '+', 2],
+            [-2, '+', 2],
+            [0]
         ]);
     });
 });
