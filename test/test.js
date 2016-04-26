@@ -94,9 +94,22 @@ function box_fail_object(){
     eval(superExpect(alpha.one.two));
 }
 
+function box_fail_array(){
+    var alpha = [1, 2, '3', false];
+    var betha = 3;
+    eval(superExpect(alpha[2] == alpha["inex"] || alpha[betha]));
+}
+
+function box_function_call(){ 
+    eval(superExpect(isNaN(0)));
+}
+
+function box_anonymous_function_call(){ 
+    eval(superExpect((function(x){return x-1;})(1)));
+}
+
 if(it.demo){
     box_ok();
-    box_fail_object();
     var show=function(f){ 
         try{ 
             f(); 
@@ -116,6 +129,8 @@ if(it.demo){
     show(box_fail_not_parenthesis);
     show(box_fail_arit_parenthesis);
     show(box_fail_object);
+    show(box_fail_array);
+    show(box_function_call);
 }
 
 //////////////// TEST ////////////////
@@ -189,6 +204,43 @@ describe("basic operations", function(){
             [{ one: {}, two: 2 }, '.', 'one', '.', 'two'],
             [{}, '.', 'two'],
             [undefined]
+        ]);
+    });
+    it("inform error array expresion", function(){
+        superExpect.collect();
+        expect(box_fail_array).to.throwError(/expect.*failed.*line/);
+        expect(superExpect.collected()).to.eql([
+            ['EXPECT FAILED'],
+            ['alpha[2] == alpha["inex"] || alpha[betha]'],
+            [[1,2,"3", false], "[", 2, "]", "==", [1,2,"3", false], "[", "inex", "]", "||", [1,2,"3", false], "[", 3, "]"],
+            /* acá hay dos líneas que son iguales, sería ideal que no aparezcan. 
+               Internamente los valores que producen la expresión "inex" usan comillas distintas.
+            */
+            [[1,2,"3", false], "[", 2, "]", "==", [1,2,"3", false], "[", "inex", "]", "||", [1,2,"3", false], "[", 3, "]"],
+            ["3", "==", undefined, "||", [1,2,"3", false], "[", 3, "]"],
+            [false, "||", 0],
+            [0]
+        ]);
+    });
+    it("inform error function call", function(){
+        superExpect.collect();
+        expect(box_function_call).to.throwError(/expect.*failed.*line/);
+        expect(superExpect.collected()).to.eql([
+            ['EXPECT FAILED'],
+            ['isNaN(0)'],
+            ['isNaN','(',0,')'],
+            [false]
+        ]);
+    });
+    it("inform error function call", function(){
+        superExpect.collect();
+        expect(box_anonymous_function_call).to.throwError(/expect.*failed.*line/);
+        expect(superExpect.collected()).to.eql([
+            ['EXPECT FAILED'],
+            ['(function(x){return x-1;})(1)'],
+            ['FunctionExpression','(',1,')'],
+            [0], // no es lo ideal este doble cero
+            [0],
         ]);
     });
 });
