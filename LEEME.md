@@ -29,6 +29,40 @@ también disponible en:
 [![inglés](https://raw.githubusercontent.com/codenautas/multilang/master/img/lang-en.png)](README.md)
 
 <!--lang:es-->
+## Uso
+<!--lang:en--]
+## Use
+[!--lang:*-->
+```js
+var expect = require('self-exlain').expect;
+
+var alpha = 10;
+var betha = 7;
+
+eval(expect(alpha / 2 > betha -1));
+```
+
+<!--lang:es-->
+Ejecuta la expresión como si fuera un `assert`, y si la expresión evalúa a `false` se genera
+**mucha más información por la consola** 
+(además de lanzar la excepción correspondiente)
+
+<!--lang:en--]
+It controls the expression like `assert` does. 
+If the expression evaluates to `false` it will show 
+**much more info in the console** 
+(also throws the Exception)
+[!--lang:*-->
+
+```txt
+EXPECT FAILED
+alpha / 2 > betha -1
+10 / 2 > 7 - 1
+5 > 6
+false 
+```
+
+<!--lang:es-->
 ## Licencia
 <!--lang:en--]
 ## License

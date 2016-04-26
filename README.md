@@ -21,6 +21,29 @@ language: ![English](https://raw.githubusercontent.com/codenautas/multilang/mast
 also available in:
 [![Spanish](https://raw.githubusercontent.com/codenautas/multilang/master/img/lang-es.png)](LEEME.md)
 
+## Use
+```js
+var expect = require('self-exlain').expect;
+
+var alpha = 10;
+var betha = 7;
+
+eval(expect(alpha / 2 > betha -1));
+```
+
+It controls the expression like `assert` does.
+If the expression evaluates to `false` it will show
+**much more info in the console**
+(also throws the Exception)
+
+```txt
+EXPECT FAILED
+alpha / 2 > betha -1
+10 / 2 > 7 - 1
+5 > 6
+false
+```
+
 ## License
 
 [MIT](LICENSE)
