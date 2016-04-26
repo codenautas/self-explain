@@ -89,8 +89,14 @@ function box_fail_arit_parenthesis(){
     eval(superExpect((alfa - betha) * 2 + 2));
 }
 
+function box_fail_object(){
+    var alpha = {one:{}, two:2};
+    eval(superExpect(alpha.one.two));
+}
+
 if(it.demo){
     box_ok();
+    box_fail_object();
     var show=function(f){ 
         try{ 
             f(); 
@@ -109,6 +115,7 @@ if(it.demo){
     show(box_fail_sum_lt_mul);
     show(box_fail_not_parenthesis);
     show(box_fail_arit_parenthesis);
+    show(box_fail_object);
 }
 
 //////////////// TEST ////////////////
@@ -171,6 +178,17 @@ describe("basic operations", function(){
             ['(', -1, ')', '*', 2, '+', 2],
             [-2, '+', 2],
             [0]
+        ]);
+    });
+    it("inform error object expresion", function(){
+        superExpect.collect();
+        expect(box_fail_object).to.throwError(/expect.*failed.*line.*94/);
+        expect(superExpect.collected()).to.eql([
+            ['EXPECT FAILED'],
+            ['alpha.one.two'],
+            [{ one: {}, two: 2 }, '.', 'one', '.', 'two'],
+            [{}, '.', 'two'],
+            [undefined]
         ]);
     });
 });
