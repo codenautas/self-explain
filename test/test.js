@@ -3,7 +3,7 @@
 var expect = require('expect.js');
 var sinon = require('sinon');
 
-var superExpect = require('../lib/self-explain.js').expect;
+var assert = require('../lib/self-explain.js').assert;
 
 /* intentional blank area: */
 
@@ -54,13 +54,13 @@ var superExpect = require('../lib/self-explain.js').expect;
 function box_ok(){
     var alfa = 1;
     var betha = 1;
-    eval(superExpect(alfa == betha));
+    eval(assert(alfa == betha));
 }
 
 function box_fail_1eq2(){
     var alfa = 1;
     var betha = 2;
-    eval(superExpect(alfa == betha));
+    eval(assert(alfa == betha));
 }
 
 function box_fail_1eq2and3neq4(){
@@ -68,44 +68,44 @@ function box_fail_1eq2and3neq4(){
     var betha = 2;
     var gamma = 3;
     var delta = 4;
-    eval(superExpect(alfa == betha && gamma != delta));
+    eval(assert(alfa == betha && gamma != delta));
 }
 
 function box_fail_sum_lt_mul(){
     var alfa = 2;
     var betha = 3;
-    eval(superExpect(alfa + betha > alfa*betha));
+    eval(assert(alfa + betha > alfa*betha));
 }
 
 function box_fail_not_parenthesis(){
     var alfa = 2;
     var betha = 3; 
-    eval(superExpect(!(alfa + 1 == betha)));
+    eval(assert(!(alfa + 1 == betha)));
 }
 
 function box_fail_arit_parenthesis(){
     var alfa = 2;
     var betha = 3;
-    eval(superExpect((alfa - betha) * 2 + 2));
+    eval(assert((alfa - betha) * 2 + 2));
 }
 
 function box_fail_object(){
     var alpha = {one:{}, two:2};
-    eval(superExpect(alpha.one.two));
+    eval(assert(alpha.one.two));
 }
 
 function box_fail_array(){
     var alpha = [1, 2, '3', false];
     var betha = 3;
-    eval(superExpect(alpha[2] == alpha["inex"] || alpha[betha]));
+    eval(assert(alpha[2] == alpha["inex"] || alpha[betha]));
 }
 
 function box_function_call(){ 
-    eval(superExpect(isNaN(0)));
+    eval(assert(isNaN(0)));
 }
 
 function box_anonymous_function_call(){ 
-    eval(superExpect((function(x){return x-1;})(1)));
+    eval(assert((function(x){return x-1;})(1)));
 }
 
 if(it.demo){
@@ -115,7 +115,7 @@ if(it.demo){
             f(); 
             console.log("BAD! MUST FAIL!"); 
         }catch(err){ 
-            if(/expect.*failed.*line/.test(err.message)){
+            if(/assert.*failed.*line/.test(err.message)){
                 console.log('its ok to fail'); 
             }else{
                 console.log('BAD ERROR',err);
@@ -140,20 +140,20 @@ describe("basic operations", function(){
         box_ok();
     });
     it("inform error in one simple comparison", function(){
-        superExpect.collect();
-        expect(box_fail_1eq2).to.throwError(/expect.*failed.*line.*63/);
-        expect(superExpect.collected()).to.eql([
-            ['EXPECT FAILED'],
+        assert.collect();
+        expect(box_fail_1eq2).to.throwError(/assert.*failed.*line.*63/);
+        expect(assert.collected()).to.eql([
+            ['ASSERT FAILED'],
             ['alfa == betha'],
             [1, '==', 2],
             [false]
         ]);
     });
     it("inform error in one simple logical", function(){
-        superExpect.collect();
-        expect(box_fail_1eq2and3neq4).to.throwError(/expect.*failed.*line.*71/);
-        expect(superExpect.collected()).to.eql([
-            ['EXPECT FAILED'],
+        assert.collect();
+        expect(box_fail_1eq2and3neq4).to.throwError(/assert.*failed.*line.*71/);
+        expect(assert.collected()).to.eql([
+            ['ASSERT FAILED'],
             ['alfa == betha && gamma != delta'],
             [1, '==', 2, '&&', 3, '!=', 4],
             [false, '&&', true],
@@ -161,10 +161,10 @@ describe("basic operations", function(){
         ]);
     });
     it("inform error in one simple math", function(){
-        superExpect.collect();
-        expect(box_fail_sum_lt_mul).to.throwError(/expect.*failed.*line.*77/);
-        expect(superExpect.collected()).to.eql([
-            ['EXPECT FAILED'],
+        assert.collect();
+        expect(box_fail_sum_lt_mul).to.throwError(/assert.*failed.*line.*77/);
+        expect(assert.collected()).to.eql([
+            ['ASSERT FAILED'],
             ['alfa + betha > alfa*betha'],
             [2,'+', 3, '>', 2, '*', 3],
             [5, '>', 6],
@@ -172,10 +172,10 @@ describe("basic operations", function(){
         ]);
     });
     it("inform error in negated parenthesis", function(){
-        superExpect.collect();
-        expect(box_fail_not_parenthesis).to.throwError(/expect.*failed.*line.*83/);
-        expect(superExpect.collected()).to.eql([
-            ['EXPECT FAILED'],
+        assert.collect();
+        expect(box_fail_not_parenthesis).to.throwError(/assert.*failed.*line.*83/);
+        expect(assert.collected()).to.eql([
+            ['ASSERT FAILED'],
             ['!(alfa + 1 == betha)'],
             ['!','(', 2,'+', 1, '==', 3, ')'],
             ['!','(', 3, '==', 3, ')'],
@@ -184,10 +184,10 @@ describe("basic operations", function(){
         ]);
     });
     it("inform error in arithmetic parenthesis", function(){
-        superExpect.collect();
-        expect(box_fail_arit_parenthesis).to.throwError(/expect.*failed.*line.*89/);
-        expect(superExpect.collected()).to.eql([
-            ['EXPECT FAILED'],
+        assert.collect();
+        expect(box_fail_arit_parenthesis).to.throwError(/assert.*failed.*line.*89/);
+        expect(assert.collected()).to.eql([
+            ['ASSERT FAILED'],
             ['(alfa - betha) * 2 + 2'],
             ['(', 2,'-', 3, ')', '*', 2, '+', 2],
             ['(', -1, ')', '*', 2, '+', 2],
@@ -196,10 +196,10 @@ describe("basic operations", function(){
         ]);
     });
     it("inform error object expresion", function(){
-        superExpect.collect();
-        expect(box_fail_object).to.throwError(/expect.*failed.*line.*94/);
-        expect(superExpect.collected()).to.eql([
-            ['EXPECT FAILED'],
+        assert.collect();
+        expect(box_fail_object).to.throwError(/assert.*failed.*line.*94/);
+        expect(assert.collected()).to.eql([
+            ['ASSERT FAILED'],
             ['alpha.one.two'],
             [{ one: {}, two: 2 }, '.', 'one', '.', 'two'],
             [{}, '.', 'two'],
@@ -207,10 +207,10 @@ describe("basic operations", function(){
         ]);
     });
     it("inform error array expresion", function(){
-        superExpect.collect();
-        expect(box_fail_array).to.throwError(/expect.*failed.*line/);
-        expect(superExpect.collected()).to.eql([
-            ['EXPECT FAILED'],
+        assert.collect();
+        expect(box_fail_array).to.throwError(/assert.*failed.*line/);
+        expect(assert.collected()).to.eql([
+            ['ASSERT FAILED'],
             ['alpha[2] == alpha["inex"] || alpha[betha]'],
             [[1,2,"3", false], "[", 2, "]", "==", [1,2,"3", false], "[", "inex", "]", "||", [1,2,"3", false], "[", 3, "]"],
             /* acá hay dos líneas que son iguales, sería ideal que no aparezcan. 
@@ -223,20 +223,20 @@ describe("basic operations", function(){
         ]);
     });
     it("inform error function call", function(){
-        superExpect.collect();
-        expect(box_function_call).to.throwError(/expect.*failed.*line/);
-        expect(superExpect.collected()).to.eql([
-            ['EXPECT FAILED'],
+        assert.collect();
+        expect(box_function_call).to.throwError(/assert.*failed.*line/);
+        expect(assert.collected()).to.eql([
+            ['ASSERT FAILED'],
             ['isNaN(0)'],
             ['isNaN','(',0,')'],
             [false]
         ]);
     });
     it("inform error function call", function(){
-        superExpect.collect();
-        expect(box_anonymous_function_call).to.throwError(/expect.*failed.*line/);
-        expect(superExpect.collected()).to.eql([
-            ['EXPECT FAILED'],
+        assert.collect();
+        expect(box_anonymous_function_call).to.throwError(/assert.*failed.*line/);
+        expect(assert.collected()).to.eql([
+            ['ASSERT FAILED'],
             ['(function(x){return x-1;})(1)'],
             ['FunctionExpression','(',1,')'],
             [0], // no es lo ideal este doble cero

@@ -1,6 +1,6 @@
 <!--multilang v0 es:LEEME.md en:README.md -->
 # self-explained
-self explained tools - starting with "expect"
+self explained tools - starting with "assert"
 
 <!--lang:es-->
 # Instalación
@@ -34,12 +34,12 @@ también disponible en:
 ## Use
 [!--lang:*-->
 ```js
-var expect = require('self-exlain').expect;
+var assert = require('self-exlain').assert;
 
 var alpha = 10;
 var betha = 7;
 
-eval(expect(alpha / 2 > betha -1));
+eval(assert(alpha / 2 > betha -1));
 ```
 
 <!--lang:es-->
@@ -55,7 +55,7 @@ If the expression evaluates to `false` it will show
 [!--lang:*-->
 
 ```txt
-EXPECT FAILED
+ASSERT FAILED
 alpha / 2 > betha -1
 10 / 2 > 7 - 1
 5 > 6
