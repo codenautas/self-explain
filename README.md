@@ -1,5 +1,5 @@
 # self-explained
-self explained tools - starting with "expect"
+self explained tools - starting with "assert"
 
 # Install
 ```sh
@@ -23,25 +23,42 @@ also available in:
 
 ## Use
 ```js
-var expect = require('self-exlain').expect;
+var assert = require('self-exlain').assert;
 
 var alpha = 10;
 var betha = 7;
 
-eval(expect(alpha / 2 > betha -1));
+assert(alpha / 2 > betha -1);
 ```
 
 It controls the expression like `assert` does.
-If the expression evaluates to `false` it will show
-**much more info in the console**
+If the expression evaluates to `false` it will show the expression and the value.
 (also throws the Exception)
 
 ```txt
-EXPECT FAILED
-alpha / 2 > betha -1
-10 / 2 > 7 - 1
-5 > 6
-false
+ASSERT FAILED
+alpha / 2 > betha -1 ==== false
+```
+
+## Much more info
+```js
+var assert = require('self-exlain').assert;
+
+var alpha = 10;
+var betha = 7;
+
+eval(assert(alpha / 2 > betha -1));
+```
+
+Adding `eval` to the assert It will shows the evaluation of all subexpressions
+
+```txt
+ASSERT FAILED
+alpha / 2 > betha -1 ==== false
+alpha / 2 ==== 5
+betha -1 ==== 6
+alpha ==== 10
+betha ==== 7
 ```
 
 ## License

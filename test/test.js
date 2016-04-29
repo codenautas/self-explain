@@ -108,6 +108,12 @@ function box_anonymous_function_call(){
     eval(assert((function(x){return x-1;})(1)));
 }
 
+function unbox_fail_arit_parenthesis(){
+    var alpha = 2;
+    var betha = 3;
+    assert((alpha - betha) * 2 + 2);
+}
+
 if(it.demo){
     box_ok();
     var show=function(f){ 
@@ -135,15 +141,24 @@ if(it.demo){
 
 //////////////// TEST ////////////////
 
+describe("basic operations ", function(){
+    it("inform error in unbox_fail_arit_parenthesis", function(){
+        assert.collect();
+        expect(unbox_fail_arit_parenthesis).to.throwError(/assert.*failed.*line.*114/);
+        expect(assert.collected()).to.eql([
+            ['ASSERT FAILED'],
+            ['(alpha - betha) * 2 + 2', '====', 0]
+        ]);
+    });
+});
+
 [
     {opts:{showMode:'subexpressions'}},
     {opts:{showMode:'resolving'}},
 ].forEach(function(info){
-    describe("basic operations "+JSON.stringify(info), function(){
+    describe("boxed operations "+JSON.stringify(info), function(){
         before(function(){
-            if(info.opts.showMode!=='subexpressions'){
-                assert.setOptions(info.opts);
-            }
+            assert.setOptions(info.opts);
         });
         it("does nothing if true", function(){
             box_ok();
