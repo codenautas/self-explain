@@ -175,10 +175,10 @@ describe("basic operations ", function(){
                 ]);
             }else{
                 expect(assert.collected()).to.eql([
-                    ['ASSERT FAILED',false],
-                    ['alpha == betha',false],
-                    ['alpha', 1],
-                    ['betha', 2]
+                    ['ASSERT FAILED'],
+                    ['alpha == betha','====',false],
+                    ['alpha','====', 1],
+                    ['betha','====', 2]
                 ]);
             }
         });
@@ -193,6 +193,17 @@ describe("basic operations ", function(){
                     [false, '&&', true],
                     [false]
                 ]);
+            }else{
+                expect(assert.collected()).to.eql([
+                    ['ASSERT FAILED'],
+                    ['alpha == betha && gamma != delta', '====', false],
+                    ['alpha == betha', '====', false],
+                    ['gamma != delta', '====', true],
+                    ['alpha', '====', 1],
+                    ['betha', '====', 2],
+                    ['gamma', '====', 3],
+                    ['delta', '====', 4]
+                ]);
             }
         });
         it("inform error in one simple math", function(){
@@ -205,6 +216,15 @@ describe("basic operations ", function(){
                     [2,'+', 3, '>', 2, '*', 3],
                     [5, '>', 6],
                     [false]
+                ]);
+            }else{
+                expect(assert.collected()).to.eql([
+                    ['ASSERT FAILED'],
+                    ['alpha + betha > alpha * betha', '====', false],
+                    ['alpha + betha', '====', 5],
+                    ['alpha * betha', '====', 6],
+                    ['alpha', '====', 2],
+                    ['betha', '====', 3],
                 ]);
             }
         });
