@@ -6,9 +6,9 @@ var sinon = require('sinon');
 var selfExplain = require('../lib/self-explain.js');
 var assert = selfExplain.assert;
 
-/* intentional blank area: */
-// 10
+var changing = require('best-globals').changing;
 
+/* intentional blank area: */
 
 
 
@@ -332,6 +332,16 @@ describe("basic operations ", function(){
             }
         });
         it("inform error function call", function(){
+            selfExplain.assert.setOptions(changing(info.opts, {escodegen:{
+                format: {
+                    indent: {
+                        style: '',
+                        base: 0,
+                        adjustMultilineComment: false
+                    },
+                    newline: '',
+                }
+            }}));
             assert.collect();
             expect(box_anonymous_function_call).to.throwError(/assert.*failed.*line/);
             if(info.opts.showMode==='resolving'){
@@ -345,8 +355,7 @@ describe("basic operations ", function(){
             }else{
                 expect(assert.collected()).to.eql([
                     ['ASSERT FAILED'],
-                    ['(function (x) {\n    return x - 1;\n}(1))', '====', 0],
-                    ['function (x) {\n    return x - 1;\n}(1)', '====', 0],
+                    ['function (x) {return x - 1;}(1)', '====', 0],
                 ]);
             }
         });
