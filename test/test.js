@@ -114,6 +114,10 @@ function unbox_fail_arit_parenthesis(){
     assert((alpha - betha) * 2 + 2);
 }
 
+function box_big_litterals(){ 
+    eval(assert(!changing({a:7, b:[1, 2], c:9}, {a:8, b:[3], d:4}).b.length));
+}
+
 if(it.demo){
     box_ok();
     var show=function(f){ 
@@ -137,6 +141,7 @@ if(it.demo){
     show(box_fail_object);
     show(box_fail_array);
     show(box_function_call);
+    show(unbox_fail_arit_parenthesis);
 }
 
 //////////////// TEST ////////////////
@@ -356,6 +361,26 @@ describe("basic operations ", function(){
                 expect(assert.collected()).to.eql([
                     ['ASSERT FAILED'],
                     ['function (x) {return x - 1;}(1)', '====', 0],
+                ]);
+            }
+        });
+        it.skip("inform error function call", function(){
+            assert.collect();
+            expect(box_big_litterals).to.throwError(/assert.*failed.*line/);
+            if(info.opts.showMode==='resolving'){
+                expect(assert.collected()).to.eql([
+                    ['ASSERT FAILED'],
+                    ['!changing({a:7, b:[1, 2], c:9}, {a:8, b:[3], d:4}).b.length'],
+                    ['isNaN','(',0,')'],
+                    [false]
+                ]);
+            }else{
+                expect(assert.collected()).to.eql([
+                    ['ASSERT FAILED'],
+                    ['!changing({a: 7,b: [1,2],c: 9}, {a: 8,b: [3],d: 4}).b.length', '====', false],
+                    ['changing({a: 7,b: [1,2],c: 9}, {a: 8,b: [3],d: 4}).b.length', '====', 1],
+                    ['changing({a: 7,b: [1,2],c: 9}, {a: 8,b: [3],d: 4}).b', '====', [3]],
+                    ['changing({a: 7,b: [1,2],c: 9}, {a: 8,b: [3],d: 4})', '====', {a: 8,b: [3],c: 9,d: 4}],
                 ]);
             }
         });
