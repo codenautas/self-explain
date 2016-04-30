@@ -105,7 +105,7 @@ function box_function_call(){
 }
 
 function box_anonymous_function_call(){ 
-    eval(assert((function(x){return x-1;})(1)));
+    eval(assert((function(x){return x-1;}(1))));
 }
 
 function unbox_fail_arit_parenthesis(){
@@ -254,6 +254,15 @@ describe("basic operations ", function(){
                     [-2, '+', 2],
                     [0]
                 ]);
+            }else{
+                expect(assert.collected()).to.eql([
+                    ['ASSERT FAILED'],
+                    ['(alpha - betha) * 2 + 2', '====', 0],
+                    ['(alpha - betha) * 2', '====', -2],
+                    ['alpha - betha', '====', -1],
+                    ['alpha', '====', 2],
+                    ['betha', '====', 3],
+                ]);
             }
         });
         it("inform error object expresion", function(){
@@ -266,6 +275,13 @@ describe("basic operations ", function(){
                     [{ one: {}, two: 2 }, '.', 'one', '.', 'two'],
                     [{}, '.', 'two'],
                     [undefined]
+                ]);
+            }else{
+                expect(assert.collected()).to.eql([
+                    ['ASSERT FAILED'],
+                    ['alpha.one.two', '====', undefined],
+                    ['alpha.one', '====', {}],
+                    ['alpha', '====', {one: {}, two: 2}],
                 ]);
             }
         });
@@ -282,8 +298,19 @@ describe("basic operations ", function(){
                     */
                     [[1,2,"3", false], "[", 2, "]", "==", [1,2,"3", false], "[", "inex", "]", "||", [1,2,"3", false], "[", 3, "]"],
                     ["3", "==", undefined, "||", [1,2,"3", false], "[", 3, "]"],
-                    [false, "||", 0],
-                    [0]
+                    [false, "||", false],
+                    [false]
+                ]);
+            }else{
+                expect(assert.collected()).to.eql([
+                    ["ASSERT FAILED"],
+                    ["alpha[2] == alpha['inex'] || alpha[betha]", "====", false],
+                    ["alpha[2] == alpha['inex']", "====", false],
+                    ["alpha[betha]", "====", false],
+                    ["alpha[2]", "====", 3],
+                    ["alpha['inex']", "====", undefined],
+                    ["alpha", "====", [1,2,'3', false]],
+                    ["betha", "====", 3],
                 ]);
             }
         });
@@ -297,6 +324,11 @@ describe("basic operations ", function(){
                     ['isNaN','(',0,')'],
                     [false]
                 ]);
+            }else{
+                expect(assert.collected()).to.eql([
+                    ['ASSERT FAILED'],
+                    ['isNaN(0)', '====', false],
+                ]);
             }
         });
         it("inform error function call", function(){
@@ -305,10 +337,16 @@ describe("basic operations ", function(){
             if(info.opts.showMode==='resolving'){
                 expect(assert.collected()).to.eql([
                     ['ASSERT FAILED'],
-                    ['(function(x){return x-1;})(1)'],
+                    ['(function(x){return x-1;}(1))'],
                     ['FunctionExpression','(',1,')'],
                     [0], // no es lo ideal este doble cero
                     [0],
+                ]);
+            }else{
+                expect(assert.collected()).to.eql([
+                    ['ASSERT FAILED'],
+                    ['(function (x) {\n    return x - 1;\n}(1))', '====', 0],
+                    ['function (x) {\n    return x - 1;\n}(1)', '====', 0],
                 ]);
             }
         });
