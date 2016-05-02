@@ -157,232 +157,129 @@ describe("basic operations ", function(){
     });
 });
 
-[
-    {opts:{showMode:'subexpressions'}},
-    {opts:{showMode:'resolving'}},
-].forEach(function(info){
-    describe("boxed operations "+JSON.stringify(info), function(){
-        before(function(){
-            assert.setOptions(info.opts);
-        });
-        it("does nothing if true", function(){
-            box_ok();
-        });
-        it("inform error in one simple comparison", function(){
-            assert.collect();
-            expect(box_fail_1eq2).to.throwError(/assert.*failed.*line.*63/);
-            if(info.opts.showMode==='resolving'){
-                expect(assert.collected()).to.eql([
-                    ['ASSERT FAILED'],
-                    ['alpha == betha'],
-                    [1, '==', 2],
-                    [false]
-                ]);
-            }else{
-                expect(assert.collected()).to.eql([
-                    ['ASSERT FAILED'],
-                    ['alpha == betha','====',false],
-                    ['alpha','====', 1],
-                    ['betha','====', 2]
-                ]);
+describe("boxed operations", function(){
+    it("does nothing if true", function(){
+        box_ok();
+    });
+    it("inform error in one simple comparison", function(){
+        assert.collect();
+        expect(box_fail_1eq2).to.throwError(/assert.*failed.*line.*63/);
+        expect(assert.collected()).to.eql([
+            ['ASSERT FAILED'],
+            ['alpha == betha','====',false],
+            ['alpha','====', 1],
+            ['betha','====', 2]
+        ]);
+    });
+    it("inform error in one simple logical", function(){
+        assert.collect();
+        expect(box_fail_1eq2and3neq4).to.throwError(/assert.*failed.*line.*71/);
+        expect(assert.collected()).to.eql([
+            ['ASSERT FAILED'],
+            ['alpha == betha && gamma != delta', '====', false],
+            ['alpha == betha', '====', false],
+            ['gamma != delta', '====', true],
+            ['alpha', '====', 1],
+            ['betha', '====', 2],
+            ['gamma', '====', 3],
+            ['delta', '====', 4]
+        ]);
+    });
+    it("inform error in one simple math", function(){
+        assert.collect();
+        expect(box_fail_sum_lt_mul).to.throwError(/assert.*failed.*line.*77/);
+        expect(assert.collected()).to.eql([
+            ['ASSERT FAILED'],
+            ['alpha + betha > alpha * betha', '====', false],
+            ['alpha + betha', '====', 5],
+            ['alpha * betha', '====', 6],
+            ['alpha', '====', 2],
+            ['betha', '====', 3],
+        ]);
+    });
+    it("inform error in negated parenthesis", function(){
+        assert.collect();
+        expect(box_fail_not_parenthesis).to.throwError(/assert.*failed.*line.*83/);
+        expect(assert.collected()).to.eql([
+            ['ASSERT FAILED'],
+            ['!(alpha + 1 == betha)', '====', false],
+            ['alpha + 1 == betha', '====', true],
+            ['alpha + 1', '====', 3],
+            ['betha', '====', 3],
+            ['alpha', '====', 2],
+        ]);
+    });
+    it("inform error in arithmetic parenthesis", function(){
+        assert.collect();
+        expect(box_fail_arit_parenthesis).to.throwError(/assert.*failed.*line.*89/);
+        expect(assert.collected()).to.eql([
+            ['ASSERT FAILED'],
+            ['(alpha - betha) * 2 + 2', '====', 0],
+            ['(alpha - betha) * 2', '====', -2],
+            ['alpha - betha', '====', -1],
+            ['alpha', '====', 2],
+            ['betha', '====', 3],
+        ]);
+    });
+    it("inform error object expresion", function(){
+        assert.collect();
+        expect(box_fail_object).to.throwError(/assert.*failed.*line.*94/);
+        expect(assert.collected()).to.eql([
+            ['ASSERT FAILED'],
+            ['alpha.one.two', '====', undefined],
+            ['alpha.one', '====', {}],
+            ['alpha', '====', {one: {}, two: 2}],
+        ]);
+    });
+    it("inform error array expresion", function(){
+        assert.collect();
+        expect(box_fail_array).to.throwError(/assert.*failed.*line/);
+        expect(assert.collected()).to.eql([
+            ["ASSERT FAILED"],
+            ["alpha[2] == alpha['inex'] || alpha[betha]", "====", false],
+            ["alpha[2] == alpha['inex']", "====", false],
+            ["alpha[betha]", "====", false],
+            ["alpha[2]", "====", 3],
+            ["alpha['inex']", "====", undefined],
+            ["alpha", "====", [1,2,'3', false]],
+            ["betha", "====", 3],
+        ]);
+    });
+    it("inform error function call", function(){
+        assert.collect();
+        expect(box_function_call).to.throwError(/assert.*failed.*line/);
+        expect(assert.collected()).to.eql([
+            ['ASSERT FAILED'],
+            ['isNaN(0)', '====', false],
+        ]);
+    });
+    it("inform error anonymous function call", function(){
+        selfExplain.assert.setOptions({escodegen:{
+            format: {
+                indent: {
+                    style: '',
+                    base: 0,
+                    adjustMultilineComment: false
+                },
+                newline: '',
             }
-        });
-        it("inform error in one simple logical", function(){
-            assert.collect();
-            expect(box_fail_1eq2and3neq4).to.throwError(/assert.*failed.*line.*71/);
-            if(info.opts.showMode==='resolving'){
-                expect(assert.collected()).to.eql([
-                    ['ASSERT FAILED'],
-                    ['alpha == betha && gamma != delta'],
-                    [1, '==', 2, '&&', 3, '!=', 4],
-                    [false, '&&', true],
-                    [false]
-                ]);
-            }else{
-                expect(assert.collected()).to.eql([
-                    ['ASSERT FAILED'],
-                    ['alpha == betha && gamma != delta', '====', false],
-                    ['alpha == betha', '====', false],
-                    ['gamma != delta', '====', true],
-                    ['alpha', '====', 1],
-                    ['betha', '====', 2],
-                    ['gamma', '====', 3],
-                    ['delta', '====', 4]
-                ]);
-            }
-        });
-        it("inform error in one simple math", function(){
-            assert.collect();
-            expect(box_fail_sum_lt_mul).to.throwError(/assert.*failed.*line.*77/);
-            if(info.opts.showMode==='resolving'){
-                expect(assert.collected()).to.eql([
-                    ['ASSERT FAILED'],
-                    ['alpha + betha > alpha*betha'],
-                    [2,'+', 3, '>', 2, '*', 3],
-                    [5, '>', 6],
-                    [false]
-                ]);
-            }else{
-                expect(assert.collected()).to.eql([
-                    ['ASSERT FAILED'],
-                    ['alpha + betha > alpha * betha', '====', false],
-                    ['alpha + betha', '====', 5],
-                    ['alpha * betha', '====', 6],
-                    ['alpha', '====', 2],
-                    ['betha', '====', 3],
-                ]);
-            }
-        });
-        it("inform error in negated parenthesis", function(){
-            assert.collect();
-            expect(box_fail_not_parenthesis).to.throwError(/assert.*failed.*line.*83/);
-            if(info.opts.showMode==='resolving'){
-                expect(assert.collected()).to.eql([
-                    ['ASSERT FAILED'],
-                    ['!(alpha + 1 == betha)'],
-                    ['!','(', 2,'+', 1, '==', 3, ')'],
-                    ['!','(', 3, '==', 3, ')'],
-                    ['!', '(', true, ')'],
-                    [false]
-                ]);
-            }
-        });
-        it("inform error in arithmetic parenthesis", function(){
-            assert.collect();
-            expect(box_fail_arit_parenthesis).to.throwError(/assert.*failed.*line.*89/);
-            if(info.opts.showMode==='resolving'){
-                expect(assert.collected()).to.eql([
-                    ['ASSERT FAILED'],
-                    ['(alpha - betha) * 2 + 2'],
-                    ['(', 2,'-', 3, ')', '*', 2, '+', 2],
-                    ['(', -1, ')', '*', 2, '+', 2],
-                    [-2, '+', 2],
-                    [0]
-                ]);
-            }else{
-                expect(assert.collected()).to.eql([
-                    ['ASSERT FAILED'],
-                    ['(alpha - betha) * 2 + 2', '====', 0],
-                    ['(alpha - betha) * 2', '====', -2],
-                    ['alpha - betha', '====', -1],
-                    ['alpha', '====', 2],
-                    ['betha', '====', 3],
-                ]);
-            }
-        });
-        it("inform error object expresion", function(){
-            assert.collect();
-            expect(box_fail_object).to.throwError(/assert.*failed.*line.*94/);
-            if(info.opts.showMode==='resolving'){
-                expect(assert.collected()).to.eql([
-                    ['ASSERT FAILED'],
-                    ['alpha.one.two'],
-                    [{ one: {}, two: 2 }, '.', 'one', '.', 'two'],
-                    [{}, '.', 'two'],
-                    [undefined]
-                ]);
-            }else{
-                expect(assert.collected()).to.eql([
-                    ['ASSERT FAILED'],
-                    ['alpha.one.two', '====', undefined],
-                    ['alpha.one', '====', {}],
-                    ['alpha', '====', {one: {}, two: 2}],
-                ]);
-            }
-        });
-        it("inform error array expresion", function(){
-            assert.collect();
-            expect(box_fail_array).to.throwError(/assert.*failed.*line/);
-            if(info.opts.showMode==='resolving'){
-                expect(assert.collected()).to.eql([
-                    ['ASSERT FAILED'],
-                    ['alpha[2] == alpha["inex"] || alpha[betha]'],
-                    [[1,2,"3", false], "[", 2, "]", "==", [1,2,"3", false], "[", "inex", "]", "||", [1,2,"3", false], "[", 3, "]"],
-                    /* acá hay dos líneas que son iguales, sería ideal que no aparezcan. 
-                       Internamente los valores que producen la expresión "inex" usan comillas distintas.
-                    */
-                    [[1,2,"3", false], "[", 2, "]", "==", [1,2,"3", false], "[", "inex", "]", "||", [1,2,"3", false], "[", 3, "]"],
-                    ["3", "==", undefined, "||", [1,2,"3", false], "[", 3, "]"],
-                    [false, "||", false],
-                    [false]
-                ]);
-            }else{
-                expect(assert.collected()).to.eql([
-                    ["ASSERT FAILED"],
-                    ["alpha[2] == alpha['inex'] || alpha[betha]", "====", false],
-                    ["alpha[2] == alpha['inex']", "====", false],
-                    ["alpha[betha]", "====", false],
-                    ["alpha[2]", "====", 3],
-                    ["alpha['inex']", "====", undefined],
-                    ["alpha", "====", [1,2,'3', false]],
-                    ["betha", "====", 3],
-                ]);
-            }
-        });
-        it("inform error function call", function(){
-            assert.collect();
-            expect(box_function_call).to.throwError(/assert.*failed.*line/);
-            if(info.opts.showMode==='resolving'){
-                expect(assert.collected()).to.eql([
-                    ['ASSERT FAILED'],
-                    ['isNaN(0)'],
-                    ['isNaN','(',0,')'],
-                    [false]
-                ]);
-            }else{
-                expect(assert.collected()).to.eql([
-                    ['ASSERT FAILED'],
-                    ['isNaN(0)', '====', false],
-                ]);
-            }
-        });
-        it("inform error function call", function(){
-            selfExplain.assert.setOptions(changing(info.opts, {escodegen:{
-                format: {
-                    indent: {
-                        style: '',
-                        base: 0,
-                        adjustMultilineComment: false
-                    },
-                    newline: '',
-                }
-            }}));
-            assert.collect();
-            expect(box_anonymous_function_call).to.throwError(/assert.*failed.*line/);
-            if(info.opts.showMode==='resolving'){
-                expect(assert.collected()).to.eql([
-                    ['ASSERT FAILED'],
-                    ['(function(x){return x-1;}(1))'],
-                    ['FunctionExpression','(',1,')'],
-                    [0], // no es lo ideal este doble cero
-                    [0],
-                ]);
-            }else{
-                expect(assert.collected()).to.eql([
-                    ['ASSERT FAILED'],
-                    ['function (x) {return x - 1;}(1)', '====', 0],
-                ]);
-            }
-        });
-        it.skip("inform error function call", function(){
-            assert.collect();
-            expect(box_big_litterals).to.throwError(/assert.*failed.*line/);
-            if(info.opts.showMode==='resolving'){
-                expect(assert.collected()).to.eql([
-                    ['ASSERT FAILED'],
-                    ['!changing({a:7, b:[1, 2], c:9}, {a:8, b:[3], d:4}).b.length'],
-                    ['isNaN','(',0,')'],
-                    [false]
-                ]);
-            }else{
-                expect(assert.collected()).to.eql([
-                    ['ASSERT FAILED'],
-                    ['!changing({a: 7,b: [1,2],c: 9}, {a: 8,b: [3],d: 4}).b.length', '====', false],
-                    ['changing({a: 7,b: [1,2],c: 9}, {a: 8,b: [3],d: 4}).b.length', '====', 1],
-                    ['changing({a: 7,b: [1,2],c: 9}, {a: 8,b: [3],d: 4}).b', '====', [3]],
-                    ['changing({a: 7,b: [1,2],c: 9}, {a: 8,b: [3],d: 4})', '====', {a: 8,b: [3],c: 9,d: 4}],
-                ]);
-            }
-        });
+        }});
+        assert.collect();
+        expect(box_anonymous_function_call).to.throwError(/assert.*failed.*line/);
+        expect(assert.collected()).to.eql([
+            ['ASSERT FAILED'],
+            ['function (x) {return x - 1;}(1)', '====', 0],
+        ]);
+    });
+    it("inform error function call", function(){
+        assert.collect();
+        expect(box_big_litterals).to.throwError(/assert.*failed.*line/);
+        expect(assert.collected()).to.eql([
+            ['ASSERT FAILED'],
+            ['!changing({a: 7,b: [1,2],c: 9}, {a: 8,b: [3],d: 4}).b.length', '====', false],
+            ['changing({a: 7,b: [1,2],c: 9}, {a: 8,b: [3],d: 4}).b.length', '====', 1],
+            ['changing({a: 7,b: [1,2],c: 9}, {a: 8,b: [3],d: 4}).b', '====', [3]],
+            ['changing({a: 7,b: [1,2],c: 9}, {a: 8,b: [3],d: 4})', '====', {a: 8,b: [3],c: 9,d: 4}],
+        ]);
     });
 });
