@@ -271,7 +271,7 @@ describe("boxed operations", function(){
             ['function (x) {return x - 1;}(1)', '====', 0],
         ]);
     });
-    it("inform error function call", function(){
+    it("inform error in object expression", function(){
         assert.collect();
         expect(box_big_litterals).to.throwError(/assert.*failed.*line/);
         expect(assert.collected()).to.eql([
