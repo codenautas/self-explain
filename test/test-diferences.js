@@ -35,13 +35,17 @@ describe("diferences", function(){
             expect(diferences(a, a)).to.be(null);
         });
         [
-            {a: 0     , b:"0"   , expect:'typeof: number != string'         , expectNotStrict:null },
+            {a: 0     , b:"0"   , expect:'typeof: number != string'         , expectBigDif:null },
             {a: 19021 , b:19201 , expect:-180                               },
-            {a: "1"   , b:0     , expect:'typeof: string != number'         , expectNotStrict:1},
-            {a: 1, b:0.99999999 , skipped: '#1', expect:1-0.99999999        , expectNotStrict:null},
+            {a: "1"   , b:0     , expect:'typeof: string != number'         , expectBigDif:1},
+            {a: 1, b:0.99999999 , skipped: '#1', expect:1-0.99999999        , expectBigDif:null},
+            {a: "man" , b:"men" , skipped: '#2', expect:'string: "man" != "men"'},
+            {a: "¡ !" , b:"¡\t!", skipped: '#2', expect:'string: "¡ !" != '+JSON.stringify("¡\t!")},
+            {a: "the man in the middle", skipped: '#3', 
+             b: "the man in the midle" , expect:'substr(18,10): "dle" != "le"'},
         ].forEach(function(fixture){
             if(fixture.skipped){ return true; }
-            var expected = mode.strict || !('expectNotStrict' in fixture)?fixture.expect:fixture.expectNotStrict;
+            var expected = mode.strict || !('expectBigDif' in fixture)?fixture.expect:fixture.expectBigDif;
             it("detect fixture "+fixture.message, function(){
                 expect(diferences(fixture.a, fixture.b)).to.be(expected);
             });
