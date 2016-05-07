@@ -10,7 +10,7 @@ var changing = require('best-globals').changing;
 
 describe("diferences", function(){
     it("inform allDiferences with mixed types", function(){
-        expect(assert.allDiferences(7, "7")).to.eql('typeof: number != string');
+        expect(assert.allDiferences(7, "7")).to.be('typeof: number != string');
     });
     it("inform diferences opts.autoTypeCast with mixed types", function(){
         expect(assert.diferences(7, "7", {autoTypeCast:true})).to.be(null);
@@ -28,7 +28,7 @@ describe("diferences", function(){
     {functionName: 'allDiferences', strict:true },
     {functionName: 'bigDiferences', strict:false},
 ].forEach(function(mode){
-    describe("diferences with "+mode.functionName, function(){
+    describe("fixtures diferences with "+mode.functionName, function(){
         var diferences = assert[mode.functionName];
         it("equals inform null", function(){
             var a={};
@@ -43,6 +43,10 @@ describe("diferences", function(){
             {a: "¡ !" , b:"¡\t!", skipped: '#2', expect:'string: "¡ !" != '+JSON.stringify("¡\t!")},
             {a: "the man in the middle", skipped: '#3', 
              b: "the man in the midle" , expect:'substr(18,10): "dle" != "le"'},
+            {a: "L1\nL2\nL3\nL4a\nL5a" , skipped: '#4', 
+             b: "L1\nL2\nL3\nX4b\nL5b" , expect:'split(/\n/) 4: "L4a" != "L4b"', expectBigDif: 'split(/\\r?\\n/) 4: "L4a" != "L4b"'},
+            {a: "one\ntwo"             , skipped: '#4', 
+             b: "one\r\ntwo"           , expect:'split(/\n/) 1: "one" != "one\\r"', expectBigDif:null},
         ].forEach(function(fixture){
             if(fixture.skipped){ return true; }
             var expected = mode.strict || !('expectBigDif' in fixture)?fixture.expect:fixture.expectBigDif;
@@ -53,8 +57,8 @@ describe("diferences", function(){
     });
 });
 
-describe("assert with diferences", function(){
-    it("inform all", function(){
+describe("diferences detailed", function(){
+    it("inform all in assert", function(){
         var seven = 7;
         assert.collect();
         expect(function(){
@@ -66,5 +70,8 @@ describe("assert with diferences", function(){
             ["assert.diferences(seven, '7')" , '====', 'typeof: number != string'],
             ['seven' , '====', 7],
         ]);
+    });
+    it.skip/*#4*/("could choice line separator", function(){
+        expect(assert.diferences("one, two", "one,other", {split:/,\s+/})).to.be('split(/,\\s+/) 2: "two" != "other"');
     });
 });
