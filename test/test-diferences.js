@@ -3,36 +3,36 @@
 var expect = require('expect.js');
 var sinon = require('sinon');
 
+var changing = require('best-globals').changing;
+
 var selfExplain = require('../lib/self-explain.js');
 var assert = selfExplain.assert;
 
-var changing = require('best-globals').changing;
-
-describe("diferences", function(){
-    it("inform allDiferences with mixed types", function(){
-        expect(assert.allDiferences(7, "7")).to.be('typeof: number != string');
+describe("differences", function(){
+    it("inform alldifferences with mixed types", function(){
+        expect(assert.alldifferences(7, "7")).to.be('typeof: number != string');
     });
-    it("inform diferences opts.autoTypeCast with mixed types", function(){
-        expect(assert.diferences(7, "7", {autoTypeCast:true})).to.be(null);
+    it("inform differences opts.autoTypeCast with mixed types", function(){
+        expect(assert.differences(7, "7", {autoTypeCast:true})).to.be(null);
     });
-    it("inform bigDiferences with mixed types", function(){
-        expect(assert.bigDiferences(7, "7")).to.be(null);
+    it("inform bigdifferences with mixed types", function(){
+        expect(assert.bigdifferences(7, "7")).to.be(null);
     });
-    it.skip/*#1*/("inform diferences opts.delta ", function(){
-        expect(assert.diferences(9.41, 9.418, {delta:0.01 })).to.be(null);
-        expect(assert.diferences(9.41, 9.418, {delta:0.001})).to.be(9.41-9.418);
+    it.skip/*#1*/("inform differences opts.delta ", function(){
+        expect(assert.differences(9.41, 9.418, {delta:0.01 })).to.be(null);
+        expect(assert.differences(9.41, 9.418, {delta:0.001})).to.be(9.41-9.418);
     });
 });
 
 [
-    {functionName: 'allDiferences', strict:true },
-    {functionName: 'bigDiferences', strict:false},
+    {functionName: 'alldifferences', strict:true },
+    {functionName: 'bigdifferences', strict:false},
 ].forEach(function(mode){
-    describe("fixtures diferences with "+mode.functionName, function(){
-        var diferences = assert[mode.functionName];
+    describe("fixtures differences with "+mode.functionName, function(){
+        var differences = assert[mode.functionName];
         it("equals inform null", function(){
             var a={};
-            expect(diferences(a, a)).to.be(null);
+            expect(differences(a, a)).to.be(null);
         });
         [
             {a: 0     , b:"0"   , expect:'typeof: number != string'         , expectBigDif:null },
@@ -54,27 +54,36 @@ describe("diferences", function(){
             }
             var expected = mode.strict || !('expectBigDif' in fixture)?fixture.expect:fixture.expectBigDif;
             it("detect fixture "+fixture.expect, function(){
-                expect(diferences(fixture.a, fixture.b)).to.be(expected);
+                expect(differences(fixture.a, fixture.b)).to.be(expected);
             });
         });
     });
 });
 
-describe("diferences detailed", function(){
+describe("differences detailed", function(){
     it("inform all in assert", function(){
         var seven = 7;
         assert.collect();
         expect(function(){
-            eval(assert(!assert.diferences(seven, '7')))
+            eval(assert(!assert.differences(seven, '7')))
         }).to.throwError(/assert.*failed/);
         expect(assert.collected()).to.eql([
             ['ASSERT FAILED'],
-            ["!assert.diferences(seven, '7')", '====', false],
-            ["assert.diferences(seven, '7')" , '====', 'typeof: number != string'],
+            ["!assert.differences(seven, '7')", '====', false],
+            ["assert.differences(seven, '7')" , '====', 'typeof: number != string'],
             ['seven' , '====', 7],
         ]);
     });
-    it/*.skip/*#4*/("could choice line separator", function(){
-        expect(assert.diferences("one, two", "one,other", {split:/,\s*/})).to.be('split(/,\\s*/) 2: "two" != "other"');
+    it("could choice line separator", function(){
+        expect(assert.differences("one, two", "one,other", {split:/,\s*/})).to.be('split(/,\\s*/) 2: "two" != "other"');
+    });
+    it("call differences for string when comparing parts", function(){
+        sinon.spy(assert, "differences");
+        expect(assert.alldifferences("A\nB\nC", "A\nb\n\C")).to.be('split(/\\n/) 2: "B" != "b"');
+        expect(assert.differences.callCount).to.eql(3);
+        expect(assert.differences.args[0].slice(0,2)).to.eql(["A\nB\nC", "A\nb\n\C"]);
+        expect(assert.differences.args[1].slice(0,2)).to.eql(["A", "A"]);
+        expect(assert.differences.args[2].slice(0,2)).to.eql(["B", "b"]);
+        assert.differences.restore();
     });
 });
