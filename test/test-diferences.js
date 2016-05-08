@@ -54,12 +54,16 @@ describe("differences", function(){
             {a: ["one"]                ,
              b: ["one",2]              , expect:'[1]: undefined != 2'         },
             {a: undefined , b:1        , expect:'undefined != 1'              },
-            {skipped:'#7', a: new Date(1992,11,5)       , b:new Date(1935,8,1)         , expect:'1992-12-05 != 1935-08-01', skipped:'#7'},
+            {skipped:'#7', a: new Date(1992,11,5)       , b:new Date(1935,8,1)         , expect:'1992-12-05 != 1935-08-01'},
             {skipped:'#7', a: new Date(1992,11,5,10,0,0), b:new Date(1935,8,1,15,0,0)  , expect:'1992-12-05 10:00:00 != 1935-08-01 15:00:00'},
             {skipped:'#7', a: new Date(1992,11,5,15,0,0), b:new Date(1992,11,5,10,10,0), expect:'04:50:00'},
             {skipped:'#7', a: new Date(1992,11,5,0,0,0),  b:new Date(1992,11,6,15,25,0), expect:'1992-12-05 != 1992-12-06 15:25:00 => -39:25:00'},
             {skipped:'#7', a: new Date(1992,11,5,0,0,0),  b:new Date(1992,11,6,15,25,0), expect:'1992-12-05 != 1992-12-06 15:25:00 => -39:25:00'},
             {skipped:'#7', a: new Date(1462670136585+100.25), b:new Date(1462670136585), expect:'00:01:40.250'},
+            {a: {last:'Simpson', name:'Bart'}, b:{last:'Simpson', name:'Lisa'}, expect:'.name: "Bart" != "Lisa"'},
+            {a: {name:'Hommer', last:'Simpson'}, b:{last:'Simpson', name:'Hommer'}, expect:'{0}: .name != .last\n...', expectBigDif:null},
+            {a: {name:'Hommer', age:40}, b:{name:'Hommer'}, expect:'{1}: .age != undefined', expectBigDif:'.age: 40 != undefined'},
+            {a: {name:'Hommer'}, b:{name:'Hommer', age:40}, expect:'{1}: undefined != .age', expectBigDif:'.age: undefined != 40'},
         ].forEach(function(fixture){
             if(fixture.skipped){ 
                 it("detect fixture "+fixture.expect);
@@ -115,7 +119,7 @@ describe("differences detailed", function(){
 });
 
 describe("many differences", function(){
-    it("show many differences", function(){
+    it("show many differences in a string", function(){
         selfExplain.assert.allDifferences.opts.maxDifferences = 3;
         expect(
             assert.allDifferences("1,2,3,4,5,6,7", "1, '2', 3, IV", {split:/,\s*/})
@@ -123,6 +127,38 @@ describe("many differences", function(){
             '.split(/,\\s*/)[1]: "2" != "\'2\'"\n'+
             '.split(/,\\s*/)[3]: "4" != "IV"\n'+
             '.split(/,\\s*/)[4]: "5" != undefined\n'+
+            '...'
+        );
+    });
+    it("show many bigDifferences in a complex object", function(){
+        selfExplain.assert.allDifferences.opts.maxDifferences = 3;
+        expect(
+            assert.bigDifferences({
+                name: 'Homer',
+                last: 'Simpson',
+                age: 40,
+                childs: ['Bartolomeo', 'Lisa', 'the baby'],
+                job: {
+                    company: 'NASA',
+                    skills: 'good'
+                },
+            },{
+                last: 'Simpson',
+                name: 'Homer',
+                age: '40',
+                childs: ['Bart', 'Lisa'],
+                job: {
+                    company: 'the nuclear plant',
+                    number: 'zero',
+                    friends: "don't remember"
+                },
+            })
+        ).to.eql(
+            '.childs[0]: "Bartolomeo" != "Bart"\n'+
+            '.childs[2]: "the baby" != undefined\n'+
+            '.job.company: "NASA" != "the nuclear plant"\n'+
+            '.job.skills: "good" != undefined\n'+
+            '.job.number: undefined != "zero"\n'+
             '...'
         );
     });
