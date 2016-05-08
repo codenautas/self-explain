@@ -9,6 +9,7 @@ var selfExplain = require('../lib/self-explain.js');
 var assert = selfExplain.assert;
 
 describe("differences", function(){
+    selfExplain.assert.allDifferences.opts.maxDifferences = 1;
     it("inform allDifferences with mixed types", function(){
         expect(assert.allDifferences(7, "7")).to.be('7 != "7"');
     });
@@ -29,6 +30,7 @@ describe("differences", function(){
     {functionName: 'bigDifferences', strict:false},
 ].forEach(function(mode){
     describe("fixtures differences with "+mode.functionName, function(){
+        selfExplain.assert.allDifferences.opts.maxDifferences = 1;
         var differences = assert[mode.functionName];
         it("equals inform null", function(){
             var a={};
@@ -44,7 +46,7 @@ describe("differences", function(){
             {a: "the man in the middle", skipped: '#3', 
              b: "the man in the midle" , expect:'.substr(18,10): "dle" != "le"'},
             {a: "L1\nL2\nL3\nL4a\nL5a" , 
-             b: "L1\nL2\nL3\nX4b\nL5b" , expect:'.split(/\\n/)[3]: "L4a" != "X4b"', expectBigDif: '.split(/\\r?\\n/)[3]: "L4a" != "X4b"'},
+             b: "L1\nL2\nL3\nX4b\nL5b" , expect:'.split(/\\n/)[3]: "L4a" != "X4b"\n...', expectBigDif: '.split(/\\r?\\n/)[3]: "L4a" != "X4b"\n...'},
             {a: "one\ntwo"             , 
              b: "one\r\ntwo"           , expect:'.split(/\\n/)[0]: "one" != "one\\r"', expectBigDif:null},
             {a: ["one","two"]          , 
@@ -66,6 +68,7 @@ describe("differences", function(){
 });
 
 describe("differences detailed", function(){
+    selfExplain.assert.allDifferences.opts.maxDifferences = 1;
     it("inform all in assert", function(){
         var seven = 7;
         assert.collect();
@@ -84,12 +87,14 @@ describe("differences detailed", function(){
     });
     it("call differences for string when comparing parts", function(){
         sinon.spy(assert, "differences");
-        expect(assert.allDifferences("A\nB\nC", "A\nb\n\C")).to.be('.split(/\\n/)[1]: "B" != "b"');
-        expect(assert.differences.callCount).to.eql(4);
-        expect(assert.differences.args[0].slice(0,2)).to.eql(["A\nB\nC", "A\nb\n\C"]);
-        expect(assert.differences.args[1].slice(0,2)).to.eql([["A", "B", "C"], ["A", "b", "C"]]);
+        expect(assert.allDifferences("A\nB\nC\nD\nE", "A\nb\n\C\nd\nE")).to.be('.split(/\\n/)[1]: "B" != "b"\n...');
+        expect(assert.differences.callCount).to.eql(6);
+        expect(assert.differences.args[0].slice(0,2)).to.eql(["A\nB\nC\nD\nE", "A\nb\n\C\nd\nE"]);
+        expect(assert.differences.args[1].slice(0,2)).to.eql([["A", "B", "C", "D", "E"], ["A", "b", "C", "d", "E"]]);
         expect(assert.differences.args[2].slice(0,2)).to.eql(["A", "A"]);
         expect(assert.differences.args[3].slice(0,2)).to.eql(["B", "b"]);
+        expect(assert.differences.args[4].slice(0,2)).to.eql(["C", "C"]);
+        expect(assert.differences.args[5].slice(0,2)).to.eql(["D", "d"]);
         assert.differences.restore();
     });
     it("call differences for each element when comparing arrays", function(){
@@ -100,5 +105,19 @@ describe("differences detailed", function(){
         expect(assert.differences.args[1].slice(0,2)).to.eql([1, 1]);
         expect(assert.differences.args[2].slice(0,2)).to.eql([undefined, null]);
         assert.differences.restore();
+    });
+});
+
+describe("many differences", function(){
+    it("show many differences", function(){
+        selfExplain.assert.allDifferences.opts.maxDifferences = 3;
+        expect(
+            assert.allDifferences("1,2,3,4,5,6,7", "1, '2', 3, IV", {split:/,\s*/})
+        ).to.be(
+            '.split(/,\\s*/)[1]: "2" != "\'2\'"\n'+
+            '.split(/,\\s*/)[3]: "4" != "IV"\n'+
+            '.split(/,\\s*/)[4]: "5" != undefined\n'+
+            '...'
+        );
     });
 });
