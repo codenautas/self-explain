@@ -19,7 +19,7 @@ describe("differences", function(){
     it("inform bigDifferences with mixed types", function(){
         expect(assert.bigDifferences(7, "7")).to.be(null);
     });
-    it.skip/*#1*/("inform differences opts.delta ", function(){
+    it("inform differences opts.delta", function(){
         expect(assert.differences(9.41, 9.418, {delta:0.01 })).to.be(null);
         expect(assert.differences(9.41, 9.418, {delta:0.001})).to.be(9.41-9.418);
     });
