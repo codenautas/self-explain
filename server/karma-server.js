@@ -28,6 +28,10 @@ if(karmaIndex>0){
             options.browsers=(process.argv[posBrowsers+1]||'').split(',');
         }
     }});
+    options.browsers = options.browsers.filter(function(browser) {
+        if(browser.match(/Safari/)) { return false; }
+        return true;
+    });
     console.log('karma starting');
     var karmaServer = new karma.Server(options, function(exitCode) {
         console.log('Karma has exited with ' + exitCode);
