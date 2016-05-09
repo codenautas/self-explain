@@ -16,12 +16,31 @@
     "best-promise": "~0.2.4"
   },
   "devDependencies": {
+    "body-parser": "~1.15.1",
+    "cookie-parser": "~1.4.1",
     "expect.js": "~0.3.1",
+    "express": "~4.13.4",
+    "express-session": "~1.13.0",
     "istanbul": "~0.4.3",
+    "karma": "~0.13.22",
+    "karma-chrome-launcher": "~1.0.1",
+    "karma-coverage": "~1.0.0",
+    "karma-coverage-html-index-reporter": "~1.0.2",
+    "karma-expect": "~1.1.2",
+    "karma-firefox-launcher": "~1.0.0",
+    "karma-ie-launcher": "~1.0.0",
+    "karma-mocha": "~1.0.1",
+    "karma-phantomjs-launcher": "~1.0.0",
+    "karma-safari-launcher": "~1.0.0",
+    "karma-slimerjs-launcher": "~1.0.0",
+    "lodash": "~4.11.2",
     "mocha": "~2.4.5",
-    "sinon": "~1.17.3",
+    "read-yaml-promise": "~1.0.2",
+    "sinon": "~1.17.4",
     
-    "best-globals": "~0.2.4"
+    "best-globals": "~0.2.4",
+    "extension-serve-static": "~0.1.6",
+    "require-bro": "*"
   },
   "engines": {
     "node": ">= 0.12"
@@ -30,6 +49,8 @@
     "test": "mocha --reporter spec --bail --check-leaks test/",
     "test-ci": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --reporter spec --check-leaks test/",
     "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot --check-leaks test/",
+    "test-k": "node server/karma-server.js --karma karma.conf.js --single-run",
+    "test-k-h": "node server/karma-server.js --karma karma.conf.js",
     "start": "node demo/demo.js"
   },
   "jshintConfig": {
