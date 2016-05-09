@@ -40,7 +40,7 @@ describe("differences", function(){
             {a: 0     , b:"0"   , expect:'0 != "0"'                         , expectBigDif:null },
             {a: 19021 , b:19201 , expect:-180                               },
             {a: "1"   , b:0     , expect:'"1" != 0'                         , expectBigDif:1},
-            {a: 1, b:0.99999999 , skipped: '#1', expect:1-0.99999999        , expectBigDif:null},
+            {a: 1, b:0.99999999 , expect:1-0.99999999        , expectBigDif:null},
             {a: "man" , b:"men" , expect:'"man" != "men"'},
             {a: "¡ !" , b:"¡\t!", expect:'"¡ !" != '+JSON.stringify("¡\t!")},
             {a: "the man in the middle",
