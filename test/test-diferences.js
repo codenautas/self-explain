@@ -55,7 +55,7 @@ describe("differences", function(){
              b: ["one",2]              , expect:'[1]: undefined != 2'         },
             {a: undefined , b:1        , expect:'undefined != 1'              },
             {              a: new Date(1992,11,5)       , b:new Date(1935,8,1)         , expect:'1992-12-05 != 1935-09-01'},
-            {skipped:'#7', a: new Date(1992,11,5,10,0,0), b:new Date(1935,8,1,15,0,0)  , expect:'1992-12-05 10:00:00 != 1935-09-01 15:00:00'},
+            {              a: new Date(1992,11,5,10,0,0), b:new Date(1935,8,1,15,0,0)  , expect:'1992-12-05 10:00:00 != 1935-09-01 15:00:00'},
             {skipped:'#7', a: new Date(1992,11,5,15,0,0), b:new Date(1992,11,5,10,10,0), expect:'04:50:00'},
             {skipped:'#7', a: new Date(1992,11,5,0,0,0),  b:new Date(1992,11,6,15,25,0), expect:'1992-12-05 != 1992-12-06 15:25:00 => -39:25:00'},
             {skipped:'#7', a: new Date(1992,11,5,0,0,0),  b:new Date(1992,11,6,15,25,0), expect:'1992-12-05 != 1992-12-06 15:25:00 => -39:25:00'},
