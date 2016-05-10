@@ -6,7 +6,7 @@
   "repository": "codenautas/self-explain",
   "license": "MIT",
   "main": "lib/self-explain.js",
-  "files": ["lib"],
+  "files": ["lib", "dist"],
   "dependencies": {
     "escodegen": "~1.8.0",
     "esprima": "~2.7.2",
