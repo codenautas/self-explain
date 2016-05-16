@@ -13,6 +13,7 @@
     "fs-extra": "~0.30.0",
     "fs-promise": "~0.5.0",
     
+    "best-globals": "~0.2.4",
     "best-promise": "~0.2.4"
   },
   "devDependencies": {
@@ -38,7 +39,6 @@
     "read-yaml-promise": "~1.0.2",
     "sinon": "~1.17.4",
     
-    "best-globals": "~0.2.4",
     "extension-serve-static": "~0.1.6",
     "require-bro": "*"
   },
