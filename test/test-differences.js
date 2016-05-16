@@ -81,7 +81,9 @@ describe("differences", function(){
             }
             var expected = mode.strict || !('expectBigDif' in fixture)?fixture.expect:fixture.expectBigDif;
             it("detect fixture "+fixture.expect, function(){
-                expect(differences(fixture.a, fixture.b)).to.be(expected);
+                var dif = differences(fixture.a, fixture.b);
+                //console.log("dif", dif)
+                expect(dif).to.be(expected);
             });
         });
     });
