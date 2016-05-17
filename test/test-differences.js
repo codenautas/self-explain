@@ -67,6 +67,7 @@ describe("differences", function(){
             {a: new Date(1992,11,5,10,0,0), b:new Date(1935,8,1,15,0,0)  , expect:'1992-12-05 10:00:00 != 1935-09-01 15:00:00'},
             {a: new Date(1992,11,5,15,0,0), b:new Date(1992,11,5,10,10,0), expect:'04:50:00'},
             {a: new Date(1992,11,5,0,0,0),  b:new Date(1992,11,6,15,25,0), expect:'1992-12-05 00:00:00 != 1992-12-06 15:25:00 => -39:25:00'},
+            {a: new Date(1992,11,5,0,0,0,100),  b:new Date(1992,11,6,15,25,0,200), expect:'1992-12-05 00:00:00.100 != 1992-12-06 15:25:00.200 => -39:25:00.100'},
             {a: new Date(1462670136585+100250), b:new Date(1462670136585), expect:'00:01:40.250'},
             {a: {last:'Simpson', name:'Bart'}, b:{last:'Simpson', name:'Lisa'}, expect:'.name: "Bart" != "Lisa"'},
             {a: {name:'Hommer', last:'Simpson'}, b:{last:'Simpson', name:'Hommer'}, expect:'{0}: .name != .last\n...', expectBigDif:null},
