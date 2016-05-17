@@ -29,8 +29,7 @@ if(karmaIndex>0){
         }
     }});
     options.browsers = options.browsers.filter(function(browser) {
-        if(browser.match(/Safari/)) { return false; }
-        return true;
+        return ! browser.match(/Safari/);        
     });
     console.log('karma starting');
     var karmaServer = new karma.Server(options, function(exitCode) {
