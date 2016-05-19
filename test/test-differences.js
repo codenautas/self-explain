@@ -93,6 +93,9 @@ describe("differences", function(){
 describe("differences detailed", function(){
     selfExplain.assert.allDifferences.opts.maxDifferences = 1;
     it("inform all in assert", function(){
+        if(agentInfo.brief==='Safari 5.1.7'){
+            return;
+        }
         var seven = 7;
         assert.collect();
         expect(function(){

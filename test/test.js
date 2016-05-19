@@ -146,7 +146,25 @@ if(it.demo){
 
 //////////////// TEST ////////////////
 
+console.log('..............',JSON.stringify(typeof agentInfo));
+
+if(typeof agentInfo === 'undefined'){
+    console.log('dddddddd..............',JSON.stringify(typeof agentInfo));
+    global.agentInfo={};
+}
+
 describe("basic operations ", function(){
+    if(agentInfo.brief==='Safari 5.1.7'){
+        it("basic old Safari support FOR unbox", function(){
+            assert.collect();
+            expect(unbox_fail_arit_parenthesis).to.throwError(/assert.*failed/);
+            expect(assert.collected()).to.eql([
+                ['ASSERT FAILED'],
+                ['UNKNOWN', '====', 0]
+            ]);
+        });
+        return; 
+    }
     it("inform error in unbox_fail_arit_parenthesis", function(){
         assert.collect();
         expect(unbox_fail_arit_parenthesis).to.throwError(/assert.*failed.*line.*114/);
@@ -158,6 +176,17 @@ describe("basic operations ", function(){
 });
 
 describe("boxed operations", function(){
+    if(agentInfo.brief==='Safari 5.1.7'){
+        it("basic old Safari support FOR boxed", function(){
+            assert.collect();
+            expect(box_fail_1eq2).to.throwError(/assert.*failed/);
+            expect(assert.collected()).to.eql([
+                ['ASSERT FAILED'],
+                ['UNKNOWN', '====', false]
+            ]);
+        });
+        return; 
+    }
     it("does nothing if true", function(){
         box_ok();
     });
