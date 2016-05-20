@@ -146,10 +146,7 @@ if(it.demo){
 
 //////////////// TEST ////////////////
 
-console.log('..............',JSON.stringify(typeof agentInfo));
-
 if(typeof agentInfo === 'undefined'){
-    console.log('dddddddd..............',JSON.stringify(typeof agentInfo));
     global.agentInfo={};
 }
 
