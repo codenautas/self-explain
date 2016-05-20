@@ -118,6 +118,10 @@ function box_big_litterals(){
     eval(assert(!changing({a:7, b:[1, 2], c:9}, {a:8, b:[3], d:4}).b.length));
 }
 
+function box_global_objects(){ 
+    eval(assert(new Date(2012,5,21).toString().match(/\d\d\d\d-\d\d/)));
+}
+
 if(it.demo){
     box_ok();
     var show=function(f){ 
@@ -142,6 +146,7 @@ if(it.demo){
     show(box_fail_array);
     show(box_function_call);
     show(unbox_fail_arit_parenthesis);
+    show(box_global_objects());
 }
 
 //////////////// TEST ////////////////
@@ -308,6 +313,21 @@ describe("boxed operations", function(){
             ['changing({a: 7,b: [1,2],c: 9}, {a: 8,b: [3],d: 4}).b.length', '====', 1],
             ['changing({a: 7,b: [1,2],c: 9}, {a: 8,b: [3],d: 4}).b', '====', [3]],
             ['changing({a: 7,b: [1,2],c: 9}, {a: 8,b: [3],d: 4})', '====', {a: 8,b: [3],c: 9,d: 4}],
+        ];
+        var obtained=assert.collected();
+        // expect(assert.allDifferences(obtained, expected)).to.eql(null);
+        expect(obtained).to.eql(expected);
+    });
+    it("inform error in global objects", function(){
+        assert.collect();
+        expect(box_global_objects).to.throwError(/assert.*failed.*line/);
+        var expected=[
+            ['ASSERT FAILED'],
+            ['new Date(2012, 5, 21).toString().match(/\\d\\d\\d\\d-\\d\\d/)', '====', null],
+            // ['new Date(2012, 5, 21).toString().match', '====', String.prototype.match],
+            ['new Date(2012, 5, 21).toString()', '====', new Date(2012, 5, 21).toString()],
+            // ['new Date(2012, 5, 21).toString', '====', Date.prototype.toString],
+            ['new Date(2012, 5, 21)', '====', new Date(2012, 5, 21)],
         ];
         var obtained=assert.collected();
         // expect(assert.allDifferences(obtained, expected)).to.eql(null);
