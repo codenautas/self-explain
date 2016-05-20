@@ -280,6 +280,7 @@ describe("boxed operations", function(){
         ]);
     });
     it("inform error anonymous function call", function(){
+        /*
         selfExplain.assert.setOptions({escodegen:{
             format: {
                 indent: {
@@ -290,6 +291,7 @@ describe("boxed operations", function(){
                 newline: '',
             }
         }});
+        */
         assert.collect();
         expect(box_anonymous_function_call).to.throwError(/assert.*failed.*line/);
         expect(assert.collected()).to.eql([
@@ -297,15 +299,18 @@ describe("boxed operations", function(){
             ['function (x) {return x - 1;}(1)', '====', 0],
         ]);
     });
-    it.skip("inform error in object expression", function(){
+    it("inform error in object expression", function(){
         assert.collect();
         expect(box_big_litterals).to.throwError(/assert.*failed.*line/);
-        expect(assert.collected()).to.eql([
+        var expected=[
             ['ASSERT FAILED'],
             ['!changing({a: 7,b: [1,2],c: 9}, {a: 8,b: [3],d: 4}).b.length', '====', false],
             ['changing({a: 7,b: [1,2],c: 9}, {a: 8,b: [3],d: 4}).b.length', '====', 1],
             ['changing({a: 7,b: [1,2],c: 9}, {a: 8,b: [3],d: 4}).b', '====', [3]],
             ['changing({a: 7,b: [1,2],c: 9}, {a: 8,b: [3],d: 4})', '====', {a: 8,b: [3],c: 9,d: 4}],
-        ]);
+        ];
+        var obtained=assert.collected();
+        // expect(assert.allDifferences(obtained, expected)).to.eql(null);
+        expect(obtained).to.eql(expected);
     });
 });
