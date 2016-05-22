@@ -12,7 +12,7 @@ $ npm install self-explained
 ```
 
 <!-- cucardas -->
-![designing](https://img.shields.io/badge/stability-designing-red.svg)
+![extending](https://img.shields.io/badge/stability-extending-orange.svg)
 [![npm-version](https://img.shields.io/npm/v/self-explain.svg)](https://npmjs.org/package/self-explain)
 [![downloads](https://img.shields.io/npm/dm/self-explain.svg)](https://npmjs.org/package/self-explain)
 [![build](https://img.shields.io/travis/codenautas/self-explain/master.svg)](https://travis-ci.org/codenautas/self-explain)
@@ -88,6 +88,17 @@ betha -1 ==== 6
 alpha ==== 10
 betha ==== 7
 ```
+
+<!--lang:*-->
+## Tests with real devices
+
+NPM version | Device                 | OS            | nav
+------------|------------------------|---------------|---------------
+0.10.0      | HTC Desire             | Android 2.2.2 | Android 2.2.2
+0.10.0      | Samgsung Galaxy Note 4 | Android 5.1.1 | Samsung Internet 4.0.0
+0.10.0      | Blue Vivo Air LTE      | Android 5.0.2 | Chrome Mobile 50.0.2661
+0.10.0      | iPad mini Retina       | iOS 8.4.0     | Mobile Safari 8.0.0
+0.10.0      | VMWare                 | WinXP         | IE 8.0.0
 
 <!--lang:es-->
 ## Licencia

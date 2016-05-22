@@ -15,6 +15,7 @@ module.exports = function(config) {
       // 'node_modules/es6-promise/dist/es6-promise.min.js',
       'node_modules/express-useragent/lib/express-useragent.js',
       'node_modules/tedede/lib/detect-browser.js',
+      'node_modules/require-bro/lib/polyfills-bro.js',
       'node_modules/require-bro/lib/require-bro.js',
       'http://sinonjs.org/releases/sinon-1.17.3.js',
       'node_modules/best-globals/best-globals.js',

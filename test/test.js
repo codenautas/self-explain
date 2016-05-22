@@ -1,27 +1,27 @@
 "use strict";
 
-var expect = require('expect.js');
-var sinon = require('sinon');
+var expectError;
+var expectEql;
 
-var selfExplain = require('../lib/self-explain.js');
-var assert = selfExplain.assert;
+var assert = require('../lib/self-explain.js').assert;
 
 var changing = require('best-globals').changing;
 
+function with_expect(){
+    var expect = require('expect.js');
+    expectError=function(x,re){ expect(x).to.throwException(re); };
+    expectEql=function(a,b){ expect(a).to.eql(b); };
+};
+function with_self_explain(){
+    expectEql=function(a,b){ 
+        eval(assert(!assert.allDifferences(a,b))); 
+    };
+    expectError=function(x,re){ try{x(); throw new Error("Error expected"); }catch(err){ assert(re.test(err.message)); } };
+};
+with_expect();
+//with_self_explain();
+
 /* intentional blank area: */
-
-
-
-
-
-
-
-
-// 20
-
-
-
-
 
 
 
@@ -156,11 +156,11 @@ if(typeof agentInfo === 'undefined'){
 }
 
 describe("basic operations ", function(){
-    if(agentInfo.brief==='Safari 5.1.7'){
-        it("basic old Safari support FOR unbox", function(){
+    if(agentInfo.brief==='Safari 5.1.7' || agentInfo.brief==='IE 8.0'){
+        it("basic old navigators support FOR unbox", function(){
             assert.collect();
-            expect(unbox_fail_arit_parenthesis).to.throwError(/assert.*failed/);
-            expect(assert.collected()).to.eql([
+            expectError(unbox_fail_arit_parenthesis,/assert.*failed/);
+            expectEql(assert.collected(),[
                 ['ASSERT FAILED'],
                 ['UNKNOWN', '====', 0]
             ]);
@@ -169,8 +169,8 @@ describe("basic operations ", function(){
     }
     it("inform error in unbox_fail_arit_parenthesis", function(){
         assert.collect();
-        expect(unbox_fail_arit_parenthesis).to.throwError(/assert.*failed.*line.*114/);
-        expect(assert.collected()).to.eql([
+        expectError(unbox_fail_arit_parenthesis, /assert.*failed.*line.*114/);
+        expectEql(assert.collected(),[
             ['ASSERT FAILED'],
             ['(alpha - betha) * 2 + 2', '====', 0]
         ]);
@@ -178,11 +178,11 @@ describe("basic operations ", function(){
 });
 
 describe("boxed operations", function(){
-    if(agentInfo.brief==='Safari 5.1.7'){
-        it("basic old Safari support FOR boxed", function(){
+    if(agentInfo.brief==='Safari 5.1.7' || agentInfo.brief==='IE 8.0'){
+        it("basic old navigators support FOR boxed", function(){
             assert.collect();
-            expect(box_fail_1eq2).to.throwError(/assert.*failed/);
-            expect(assert.collected()).to.eql([
+            expectError(box_fail_1eq2,/assert.*failed/);
+            expectEql(assert.collected(), [
                 ['ASSERT FAILED'],
                 ['UNKNOWN', '====', false]
             ]);
@@ -194,8 +194,8 @@ describe("boxed operations", function(){
     });
     it("inform error in one simple comparison", function(){
         assert.collect();
-        expect(box_fail_1eq2).to.throwError(/assert.*failed.*line.*63/);
-        expect(assert.collected()).to.eql([
+        expectError(box_fail_1eq2,/assert.*failed.*line.*63/);
+        expectEql(assert.collected(), [
             ['ASSERT FAILED'],
             ['alpha == betha','====',false],
             ['alpha','====', 1],
@@ -204,8 +204,8 @@ describe("boxed operations", function(){
     });
     it("inform error in one simple logical", function(){
         assert.collect();
-        expect(box_fail_1eq2and3neq4).to.throwError(/assert.*failed.*line.*71/);
-        expect(assert.collected()).to.eql([
+        expectError(box_fail_1eq2and3neq4, /assert.*failed.*line.*71/);
+        expectEql(assert.collected(), [
             ['ASSERT FAILED'],
             ['alpha == betha && gamma != delta', '====', false],
             ['alpha == betha', '====', false],
@@ -218,8 +218,8 @@ describe("boxed operations", function(){
     });
     it("inform error in one simple math", function(){
         assert.collect();
-        expect(box_fail_sum_lt_mul).to.throwError(/assert.*failed.*line.*77/);
-        expect(assert.collected()).to.eql([
+        expectError(box_fail_sum_lt_mul, /assert.*failed.*line.*77/);
+        expectEql(assert.collected(), [
             ['ASSERT FAILED'],
             ['alpha + betha > alpha * betha', '====', false],
             ['alpha + betha', '====', 5],
@@ -230,8 +230,8 @@ describe("boxed operations", function(){
     });
     it("inform error in negated parenthesis", function(){
         assert.collect();
-        expect(box_fail_not_parenthesis).to.throwError(/assert.*failed.*line.*83/);
-        expect(assert.collected()).to.eql([
+        expectError(box_fail_not_parenthesis, /assert.*failed.*line.*83/);
+        expectEql(assert.collected(), [
             ['ASSERT FAILED'],
             ['!(alpha + 1 == betha)', '====', false],
             ['alpha + 1 == betha', '====', true],
@@ -242,8 +242,8 @@ describe("boxed operations", function(){
     });
     it("inform error in arithmetic parenthesis", function(){
         assert.collect();
-        expect(box_fail_arit_parenthesis).to.throwError(/assert.*failed.*line.*89/);
-        expect(assert.collected()).to.eql([
+        expectError(box_fail_arit_parenthesis, /assert.*failed.*line.*89/);
+        expectEql(assert.collected(), [
             ['ASSERT FAILED'],
             ['(alpha - betha) * 2 + 2', '====', 0],
             ['(alpha - betha) * 2', '====', -2],
@@ -254,8 +254,8 @@ describe("boxed operations", function(){
     });
     it("inform error object expresion", function(){
         assert.collect();
-        expect(box_fail_object).to.throwError(/assert.*failed.*line.*94/);
-        expect(assert.collected()).to.eql([
+        expectError(box_fail_object, /assert.*failed.*line.*94/);
+        expectEql(assert.collected(), [
             ['ASSERT FAILED'],
             ['alpha.one.two', '====', undefined],
             ['alpha.one', '====', {}],
@@ -264,8 +264,8 @@ describe("boxed operations", function(){
     });
     it("inform error array expresion", function(){
         assert.collect();
-        expect(box_fail_array).to.throwError(/assert.*failed.*line/);
-        expect(assert.collected()).to.eql([
+        expectError(box_fail_array, /assert.*failed.*line/);
+        expectEql(assert.collected(), [
             ["ASSERT FAILED"],
             ["alpha[2] == alpha['inex'] || alpha[betha]", "====", false],
             ["alpha[2] == alpha['inex']", "====", false],
@@ -278,8 +278,8 @@ describe("boxed operations", function(){
     });
     it("inform error function call", function(){
         assert.collect();
-        expect(box_function_call).to.throwError(/assert.*failed.*line/);
-        expect(assert.collected()).to.eql([
+        expectError(box_function_call, /assert.*failed.*line/);
+        expectEql(assert.collected(), [
             ['ASSERT FAILED'],
             ['isNaN(0)', '====', false],
         ]);
@@ -298,15 +298,15 @@ describe("boxed operations", function(){
         }});
         */
         assert.collect();
-        expect(box_anonymous_function_call).to.throwError(/assert.*failed.*line/);
-        expect(assert.collected()).to.eql([
+        expectError(box_anonymous_function_call, /assert.*failed.*line/);
+        expectEql(assert.collected(), [
             ['ASSERT FAILED'],
             ['function (x) {return x - 1;}(1)', '====', 0],
         ]);
     });
     it("inform error in object expression", function(){
         assert.collect();
-        expect(box_big_litterals).to.throwError(/assert.*failed.*line/);
+        expectError(box_big_litterals, /assert.*failed.*line/);
         var expected=[
             ['ASSERT FAILED'],
             ['!changing({a: 7,b: [1,2],c: 9}, {a: 8,b: [3],d: 4}).b.length', '====', false],
@@ -316,11 +316,11 @@ describe("boxed operations", function(){
         ];
         var obtained=assert.collected();
         // expect(assert.allDifferences(obtained, expected)).to.eql(null);
-        expect(obtained).to.eql(expected);
+        expectEql(obtained, expected);
     });
     it("inform error in global objects", function(){
         assert.collect();
-        expect(box_global_objects).to.throwError(/assert.*failed.*line/);
+        expectError(box_global_objects, /assert.*failed.*line/);
         var expected=[
             ['ASSERT FAILED'],
             ['new Date(2012, 5, 21).toString().match(/\\d\\d\\d\\d-\\d\\d/)', '====', null],
@@ -331,6 +331,6 @@ describe("boxed operations", function(){
         ];
         var obtained=assert.collected();
         // expect(assert.allDifferences(obtained, expected)).to.eql(null);
-        expect(obtained).to.eql(expected);
+        expectEql(obtained, expected);
     });
 });

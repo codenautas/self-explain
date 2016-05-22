@@ -1,13 +1,26 @@
-"use strict";
+﻿"use strict";
 /* ¡Atención! Este archivo debe verse en UTF-8: Sí */
 
-var expect = require('expect.js');
-var sinon = require('sinon');
+var expectError;
+var expectEql;
 
 var changing = require('best-globals').changing;
 
-var selfExplain = require('../lib/self-explain.js');
-var assert = selfExplain.assert;
+var assert = require('../lib/self-explain.js').assert;
+
+function with_expect(){
+    var expect = require('expect.js');
+    expectError=function(x,re){ expect(x).to.throwException(re); };
+    expectEql=function(a,b){ expect(a).to.eql(b); };
+};
+function with_self_explain(){
+    expectEql=function(a,b){ 
+        eval(assert(!assert.allDifferences(a,b))); 
+    };
+    expectError=function(x,re){ try{x(); throw new Error("Error expected"); }catch(err){ assert(re.test(err.message)); } };
+};
+with_expect();
+//with_self_explain();
 
 function Example(ini){
     for(var name in ini){
@@ -18,32 +31,40 @@ function Example(ini){
 Example.prototype.protoFunction = function(){};
 
 describe("differences", function(){
-    selfExplain.assert.allDifferences.opts.maxDifferences = 1;
+    assert.allDifferences.opts.maxDifferences = 1;
     it("inform allDifferences with mixed types", function(){
-        expect(assert.allDifferences(7, "7")).to.be('7 != "7"');
+        expectEql(assert.allDifferences(7, "7"), '7 != "7"');
     });
     it("inform differences opts.autoTypeCast with mixed types", function(){
-        expect(assert.differences(7, "7", {autoTypeCast:true})).to.be(null);
+        expectEql(assert.differences(7, "7", {autoTypeCast:true}), null);
     });
     it("inform bigDifferences with mixed types", function(){
-        expect(assert.bigDifferences(7, "7")).to.be(null);
+        expectEql(assert.bigDifferences(7, "7"), null);
     });
     it("inform differences opts.delta ", function(){
-        expect(assert.differences(9.41, 9.418, {delta:0.01 })).to.be(null);
-        expect(assert.differences(9.41, 9.418, {delta:0.001})).to.be(9.41-9.418);
+        expectEql(assert.differences(9.41, 9.418, {delta:0.01 }), null);
+        expectEql(assert.differences(9.41, 9.418, {delta:0.001}), 9.41-9.418);
     });
 });
+
+var fixture={a: {last:'Simpson', name:'Bart'}, b:{last:'Simpson', name:'Lisa'}, expect:'.name: "Bart" != "Lisa"'};
+// it("detect fixture "+fixture.expect, function(){
+    var dif = assert.allDifferences(fixture.a, fixture.b);
+    //console.log("dif", dif)
+    expectEql(dif, fixture.expect);
+// });
+
 
 [
     {functionName: 'allDifferences', strict:true },
     {functionName: 'bigDifferences', strict:false},
 ].forEach(function(mode){
     describe("fixtures differences with "+mode.functionName, function(){
-        selfExplain.assert.allDifferences.opts.maxDifferences = 1;
+        assert.allDifferences.opts.maxDifferences = 1;
         var differences = assert[mode.functionName];
         it("equals inform null", function(){
             var a={};
-            expect(differences(a, a)).to.be(null);
+            expectEql(differences(a, a), null);
         });
         [
             {a: 0     , b:"0"   , expect:'0 != "0"'                         , expectBigDif:null },
@@ -51,7 +72,7 @@ describe("differences", function(){
             {a: "1"   , b:0     , expect:'"1" != 0'                         , expectBigDif:1},
             {a: 1, b:0.999999991, expect:1-0.999999991                      , expectBigDif:null},
             {a: "man" , b:"men" , expect:'"man" != "men"'},
-            {a: "¡ !" , b:"¡\t!", expect:'"¡ !" != '+JSON.stringify("¡\t!")},
+            {a: "¡ !" , b:"¡\t!", expect:JSON.stringify("¡ !")+' != '+JSON.stringify("¡\t!")},
             {a: "the man in the middle", 
              b: "the man in the midle" , expect:'.substr(18,10): "dle" != "le"'},
             {a: "L1\nL2\nL3\nL4a\nL5a" , 
@@ -84,24 +105,24 @@ describe("differences", function(){
             it("detect fixture "+fixture.expect, function(){
                 var dif = differences(fixture.a, fixture.b);
                 //console.log("dif", dif)
-                expect(dif).to.be(expected);
+                expectEql(dif, expected);
             });
         });
     });
 });
 
 describe("differences detailed", function(){
-    selfExplain.assert.allDifferences.opts.maxDifferences = 1;
+    assert.allDifferences.opts.maxDifferences = 1;
     it("inform all in assert", function(){
-        if(agentInfo.brief==='Safari 5.1.7'){
+        if(agentInfo.brief==='Safari 5.1.7' || agentInfo.brief==='IE 8.0'){
             return;
         }
         var seven = 7;
         assert.collect();
-        expect(function(){
+        expectError(function(){
             eval(assert(!assert.differences(seven, '7')))
-        }).to.throwError(/assert.*failed/);
-        expect(assert.collected()).to.eql([
+        },/assert.*failed/);
+        expectEql(assert.collected(), [
             ['ASSERT FAILED'],
             ["!assert.differences(seven, '7')", '====', false],
             ["assert.differences(seven, '7')" , '====', '7 != "7"'],
@@ -109,37 +130,53 @@ describe("differences detailed", function(){
         ]);
     });
     it("could choice line separator", function(){
-        expect(assert.differences("one, two", "one,other", {split:/,\s*/})).to.be('.split(/,\\s*/)[1]: "two" != "other"');
+        expectEql(assert.differences("one, two", "one,other", {split:/,\s*/}), '.split(/,\\s*/)[1]: "two" != "other"');
     });
+    var controlCall2Differences = function(fdif, expected, calls){
+        var save=assert.differences;
+        var collect=[];
+        assert.differences=function(a,b,c,d,e){
+            collect.push([a,b]);
+            return save(a,b,c,d,e);
+        }
+        var obtained=fdif();
+        assert.differences=save;
+        expectEql(obtained, expected);
+        expectEql(collect, calls);
+    }
     it("call differences for string when comparing parts", function(){
-        sinon.spy(assert, "differences");
-        expect(assert.allDifferences("A\nB\nC\nD\nE", "A\nb\n\C\nd\nE")).to.be('.split(/\\n/)[1]: "B" != "b"\n...');
-        expect(assert.differences.callCount).to.eql(6);
-        expect(assert.differences.args[0].slice(0,2)).to.eql(["A\nB\nC\nD\nE", "A\nb\n\C\nd\nE"]);
-        expect(assert.differences.args[1].slice(0,2)).to.eql([["A", "B", "C", "D", "E"], ["A", "b", "C", "d", "E"]]);
-        expect(assert.differences.args[2].slice(0,2)).to.eql(["A", "A"]);
-        expect(assert.differences.args[3].slice(0,2)).to.eql(["B", "b"]);
-        expect(assert.differences.args[4].slice(0,2)).to.eql(["C", "C"]);
-        expect(assert.differences.args[5].slice(0,2)).to.eql(["D", "d"]);
-        assert.differences.restore();
+        controlCall2Differences(function(){
+            return assert.allDifferences("A\nB\nC\nD\nE", "A\nb\n\C\nd\nE");
+        },
+        '.split(/\\n/)[1]: "B" != "b"\n...',
+        [
+            ["A\nB\nC\nD\nE", "A\nb\n\C\nd\nE"],
+            [["A", "B", "C", "D", "E"], ["A", "b", "C", "d", "E"]],
+            ["A", "A"],
+            ["B", "b"],
+            ["C", "C"],
+            ["D", "d"],
+        ]);
     });
     it("call differences for each element when comparing arrays", function(){
-        sinon.spy(assert, "differences");
-        expect(assert.allDifferences([1], [1, null])).to.be('[1]: undefined != null');
-        expect(assert.differences.callCount).to.eql(3);
-        expect(assert.differences.args[0].slice(0,2)).to.eql([[1], [1, null]]);
-        expect(assert.differences.args[1].slice(0,2)).to.eql([1, 1]);
-        expect(assert.differences.args[2].slice(0,2)).to.eql([undefined, null]);
-        assert.differences.restore();
+        controlCall2Differences(function(){
+            return assert.allDifferences([1], [1, null]);
+        }, 
+        '[1]: undefined != null', 
+        [
+            [[1], [1, null]],
+            [1, 1],
+            [undefined, null]
+        ]);
     });
 });
 
 describe("many differences", function(){
     it("show many differences in a string", function(){
-        selfExplain.assert.allDifferences.opts.maxDifferences = 3;
-        expect(
+        assert.allDifferences.opts.maxDifferences = 3;
+        expectEql(
             assert.allDifferences("1,2,3,4,5,6,7", "1, '2', 3, IV", {split:/,\s*/})
-        ).to.be(
+        ,
             '.split(/,\\s*/)[1]: "2" != "\'2\'"\n'+
             '.split(/,\\s*/)[3]: "4" != "IV"\n'+
             '.split(/,\\s*/)[4]: "5" != undefined\n'+
@@ -147,8 +184,8 @@ describe("many differences", function(){
         );
     });
     it("show many bigDifferences in a complex object", function(){
-        selfExplain.assert.allDifferences.opts.maxDifferences = 3;
-        expect(
+        assert.allDifferences.opts.maxDifferences = 3;
+        expectEql(
             assert.bigDifferences({
                 name: 'Homer',
                 last: 'Simpson',
@@ -169,7 +206,7 @@ describe("many differences", function(){
                     friends: "don't remember"
                 },
             })
-        ).to.eql(
+        ,
             '.childs[0]: "Bartolomeo" != "Bart"\n'+
             '.childs[2]: "the baby" != undefined\n'+
             '.job.company: "NASA" != "the nuclear plant"\n'+
