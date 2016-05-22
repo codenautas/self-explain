@@ -42,7 +42,7 @@
     
     "extension-serve-static": "~0.1.6",
     "js-to-html": "~0.9.0",
-    "require-bro": "~0.0.1",
+    "require-bro": "~0.10.0",
     "tedede": "~0.2.2"
   },
   "engines": {
