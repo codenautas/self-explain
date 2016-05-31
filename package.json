@@ -1,7 +1,7 @@
 {
   "name": "self-explain",
   "description": "self explained tools - starting with \"assert\"",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "author": "Codenautas <codenautas@googlegroups.com>",
   "repository": "codenautas/self-explain",
   "license": "MIT",

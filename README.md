@@ -61,6 +61,19 @@ alpha ==== 10
 betha ==== 7
 ```
 
+## Exceptions
+
+Function `assertCatch` controls that an Error been throwed.
+
+
+```js
+assertCatch(function{
+    if(error){
+        throw new Error('an error');
+    }
+}, /an error/);
+```
+
 ## Tests with real devices
 
 NPM version | Device                 | OS            | nav

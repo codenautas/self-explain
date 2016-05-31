@@ -89,6 +89,26 @@ alpha ==== 10
 betha ==== 7
 ```
 
+<!--lang:es-->
+## Excepciones
+
+La función `assertCatch` controla que se lance una excepción.
+
+<!--lang:en--]
+## Exceptions
+
+Function `assertCatch` controls that an Error been throwed.
+
+[!--lang:*-->
+
+```js
+assertCatch(function{
+    if(error){
+        throw new Error('an error');
+    }
+}, /an error/);
+```
+
 <!--lang:*-->
 ## Tests with real devices
 
