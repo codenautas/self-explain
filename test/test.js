@@ -122,6 +122,12 @@ function box_global_objects(){
     eval(assert(new Date(2012,5,21).toString().match(/\d\d\d\d-\d\d/)));
 }
 
+function box_fail_nomultiline(){ 
+    var alpha = 2;
+    var betha = 3;
+    assert((alpha - betha) * 2 + 2);
+}
+
 function box_fail_multiline(){ 
     var alpha = 2;
     var betha = 3;
@@ -137,18 +143,6 @@ function box_fail_eval_multiline(){
     eval(assert(
         (alpha - betha) * 2 + 2
     ));
-}
-
-function box_fail_nomultiline(){ 
-    var alpha = 2;
-    var betha = 3;
-    assert((alpha - betha) * 2 + 2);
-}
-
-function box_fail_eval_nomultiline(){ 
-    var alpha = 2;
-    var betha = 3;
-    eval(assert((alpha - betha) * 2 + 2));
 }
 
 
@@ -366,39 +360,32 @@ describe("boxed operations", function(){
 });
 
 describe("multiline assertions ", function(){
-    var expectedNoEval = [
+    it("no multiline", function(){
+        assert.collect();
+        expectError(box_fail_nomultiline, /assert.*failed.*line.*128/);
+        expectEql(assert.collected(),[
             ['ASSERT FAILED'],
             ['(alpha - betha) * 2 + 2', '====', 0]
-        ];
-    var expectedEval = [
+        ]);
+    });
+    it("multiline", function(){
+        assert.collect();
+        expectError(box_fail_multiline, /assert.*failed.*line.*134/);
+        expectEql(assert.collected(),[
+            ['ASSERT FAILED'],
+            ['(alpha - betha) * 2 + 2\n&& (3<1)', '====', 0]
+        ]);
+    });
+    it("eval multiline", function(){
+        assert.collect();
+        expectError(box_fail_eval_multiline, /assert.*failed.*line.*143/);
+        expectEql(assert.collected(),[
             ['ASSERT FAILED'],
             ['(alpha - betha) * 2 + 2', '====', 0],
             [ '(alpha - betha) * 2', '====', -2 ],
             [ 'alpha - betha', '====', -1 ],
             [ 'alpha', '====', 2 ],
             [ 'betha', '====', 3 ]
-        ];
-    it("no multiline", function(){
-        assert.collect();
-        expectError(box_fail_nomultiline, /assert.*failed.*line.*145/);
-        expectEql(assert.collected(),expectedNoEval);
-    });
-    it("eval no multiline", function(){
-        assert.collect();
-        expectError(box_fail_eval_nomultiline, /assert.*failed.*line.*151/);
-        expectEql(assert.collected(),expectedEval);
-    });
-    it("eval multiline", function(){
-        assert.collect();
-        expectError(box_fail_eval_multiline, /assert.*failed.*line.*137/);
-        expectEql(assert.collected(),expectedEval);
-    });
-    it("multiline", function(){
-        assert.collect();
-        expectError(box_fail_multiline, /assert.*failed.*line.*128/);
-        expectEql(assert.collected(),[
-            ['ASSERT FAILED'],
-            ['(alpha - betha) * 2 + 2\n&& (3<1)', '====', 0]
         ]);
     });
 });
