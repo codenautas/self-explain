@@ -165,6 +165,11 @@ function box_fail_multiline_identation(){
     );
 }
 
+function box_fail_array_as_params(){
+    var len = function len(a){ return a.length; }
+    eval(assert(len([2,"inex"]) === 3));
+}
+
 if(it.demo){
     box_ok();
     var show=function(f){ 
@@ -187,6 +192,7 @@ if(it.demo){
     show(box_fail_arit_parenthesis);
     show(box_fail_object);
     show(box_fail_array);
+    show(box_fail_array_as_params);
     show(box_function_call);
     show(unbox_fail_arit_parenthesis);
     show(box_global_objects());
@@ -317,6 +323,16 @@ describe("boxed operations", function(){
             ["alpha['inex']", "====", undefined],
             ["alpha", "====", [1,2,'3', false]],
             ["betha", "====", 3],
+        ]);
+    });
+    it("inform error array parameter expresion", function(){
+        assert.collect();
+        expectError(box_fail_array_as_params, /assert.*failed.*line/);
+        expectEql(assert.collected(), [
+            ["ASSERT FAILED"],
+            ["len([2,'inex']) === 3", "====", false],
+            ["len([2,'inex'])", "====", 2],
+            ["[2,'inex']", "====", [2,'inex']],
         ]);
     });
     it("inform error function call", function(){
