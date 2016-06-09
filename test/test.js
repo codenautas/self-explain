@@ -170,6 +170,10 @@ function box_fail_array_as_params(){
     eval(assert(len([2,"inex"]) === 3));
 }
 
+function box_fail_object2(){
+    eval(assert(({1: 'x'})[1] == 'y'));
+}
+
 if(it.demo){
     box_ok();
     var show=function(f){ 
@@ -191,6 +195,7 @@ if(it.demo){
     show(box_fail_not_parenthesis);
     show(box_fail_arit_parenthesis);
     show(box_fail_object);
+    show(box_fail_object2);
     show(box_fail_array);
     show(box_fail_array_as_params);
     show(box_function_call);
@@ -309,6 +314,15 @@ describe("boxed operations", function(){
             ['alpha.one.two', '====', undefined],
             ['alpha.one', '====', {}],
             ['alpha', '====', {one: {}, two: 2}],
+        ]);
+    });
+    it("inform error object expresion with numeric property", function(){
+        assert.collect();
+        expectError(box_fail_object2, /assert.*failed.*line/);
+        expectEql(assert.collected(), [
+            ['ASSERT FAILED'],
+            ["{ 1: 'x' }[1] == 'y'", '====', false],
+            ["{ 1: 'x' }[1]", '====', "x"],
         ]);
     });
     it("inform error array expresion", function(){
