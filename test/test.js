@@ -122,6 +122,58 @@ function box_global_objects(){
     eval(assert(new Date(2012,5,21).toString().match(/\d\d\d\d-\d\d/)));
 }
 
+function box_fail_nomultiline(){ 
+    var alpha = 2;
+    var betha = 3;
+    assert((alpha - betha) * 2 + 2);
+}
+
+function box_fail_multiline(){ 
+    var alpha = 2;
+    var betha = 3;
+    assert(
+        (alpha - betha) * 2 + 2
+        && (3<1)
+    );
+}
+
+function box_fail_eval_multiline(){ 
+    var alpha = 2;
+    var betha = 3;
+    eval(assert(
+        (alpha - betha) * 2 + 2
+    ));
+}
+
+function box_fail_eval_multiline_plus(){ 
+    var alpha = 2;
+    var betha = 3;
+    eval(assert(
+        (alpha - betha) * 2 + 2
+        || 3-2
+        && alpha > betha
+    ));
+}
+
+function box_fail_multiline_identation(){ 
+    var alpha = 2;
+    var betha = 3;
+    assert(
+        (alpha - betha) * 2 + 2
+  && (3<1)
+        && false
+    );
+}
+
+function box_fail_array_as_params(){
+    var len = function len(a){ return a.length; }
+    eval(assert(len([2,"inex"]) === 3));
+}
+
+function box_fail_object2(){
+    eval(assert(({1: 'x'})[1] == 'y'));
+}
+
 if(it.demo){
     box_ok();
     var show=function(f){ 
@@ -143,7 +195,9 @@ if(it.demo){
     show(box_fail_not_parenthesis);
     show(box_fail_arit_parenthesis);
     show(box_fail_object);
+    show(box_fail_object2);
     show(box_fail_array);
+    show(box_fail_array_as_params);
     show(box_function_call);
     show(unbox_fail_arit_parenthesis);
     show(box_global_objects());
@@ -262,6 +316,15 @@ describe("boxed operations", function(){
             ['alpha', '====', {one: {}, two: 2}],
         ]);
     });
+    it("inform error object expresion with numeric property", function(){
+        assert.collect();
+        expectError(box_fail_object2, /assert.*failed.*line/);
+        expectEql(assert.collected(), [
+            ['ASSERT FAILED'],
+            ["{ 1: 'x' }[1] == 'y'", '====', false],
+            ["{ 1: 'x' }[1]", '====', "x"],
+        ]);
+    });
     it("inform error array expresion", function(){
         assert.collect();
         expectError(box_fail_array, /assert.*failed.*line/);
@@ -274,6 +337,16 @@ describe("boxed operations", function(){
             ["alpha['inex']", "====", undefined],
             ["alpha", "====", [1,2,'3', false]],
             ["betha", "====", 3],
+        ]);
+    });
+    it("inform error array parameter expresion", function(){
+        assert.collect();
+        expectError(box_fail_array_as_params, /assert.*failed.*line/);
+        expectEql(assert.collected(), [
+            ["ASSERT FAILED"],
+            ["len([2,'inex']) === 3", "====", false],
+            ["len([2,'inex'])", "====", 2],
+            ["[2,'inex']", "====", [2,'inex']],
         ]);
     });
     it("inform error function call", function(){
@@ -332,5 +405,57 @@ describe("boxed operations", function(){
         var obtained=assert.collected();
         // expect(assert.allDifferences(obtained, expected)).to.eql(null);
         expectEql(obtained, expected);
+    });
+});
+
+describe("multiline assertions ", function(){
+    it("assert() no multiline", function(){
+        assert.collect();
+        expectError(box_fail_nomultiline, /assert.*failed.*line.*128/);
+        expectEql(assert.collected(),[
+            ['ASSERT FAILED'],
+            ['(alpha - betha) * 2 + 2', '====', 0]
+        ]);
+    });
+    it("assert(...)", function(){
+        assert.collect();
+        expectError(box_fail_multiline, /assert.*failed.*line.*134/);
+        expectEql(assert.collected(),[
+            ['ASSERT FAILED'],
+            ['(alpha - betha) * 2 + 2\n&& (3<1)', '====', 0]
+        ]);
+    });
+    it("eval(assert(...))", function(){
+        assert.collect();
+        expectError(box_fail_eval_multiline, /assert.*failed.*line.*143/);
+        expectEql(assert.collected(),[
+            ['ASSERT FAILED'],
+            ['(alpha - betha) * 2 + 2', '====', 0],
+            [ '(alpha - betha) * 2', '====', -2 ],
+            [ 'alpha - betha', '====', -1 ],
+            [ 'alpha', '====', 2 ],
+            [ 'betha', '====', 3 ]
+        ]);
+    });
+    it("eval(assert(...)) plus", function(){
+        assert.collect();
+        expectError(box_fail_eval_multiline_plus, /assert.*failed.*line.*151/);
+        expectEql(assert.collected(),[
+            [ 'ASSERT FAILED' ],
+            [ '(alpha - betha) * 2 + 2 || 3 - 2 && alpha > betha', '====', false ],
+            [ '(alpha - betha) * 2 + 2', '====', 0 ],
+            [ '3 - 2 && alpha > betha', '====', false ],
+            [ '(alpha - betha) * 2', '====', -2 ],
+            [ '3 - 2', '====', 1 ],
+            [ 'alpha > betha', '====', false ],
+            [ 'alpha - betha', '====', -1 ],
+            [ 'alpha', '====', 2 ],
+            [ 'betha', '====', 3 ]
+        ]);
+    });
+    it("indetation error", function(){
+        assert.collect();
+        expectError(box_fail_multiline_identation, /bad multiline block at line 163/);
+        expectEql(assert.collected(),[]);
     });
 });
