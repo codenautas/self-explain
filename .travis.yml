@@ -10,4 +10,3 @@ matrix:
     - node_js: "6" 
 script: "npm run-script test-ci"
 after_script: "npm install coveralls@2.11.9 && cat ./coverage/lcov.info | coveralls"
-before_install: "npm config set strict-ssl false"
