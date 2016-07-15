@@ -96,8 +96,8 @@ var fixture={a: {last:'Simpson', name:'Bart'}, b:{last:'Simpson', name:'Lisa'}, 
             {a: {name:'Hommer'}, b:{name:'Hommer', age:40}, expect:'{1}: undefined != .age', expectBigDif:'.age: undefined != 40'},
             {a: new Example({uno:1}), b: new Example({uno:1}), expect: null },
             {a: new Example({uno:1}), b: {uno:1}, expect: ".class: Example != Object", expectBigDif:null },
-            {skip:'#14', a: new Date(1992,11,5,10,0,0), b:'1992-12-05 10:00:00', expect:'1992-12-05 10:00:00 != "1992-12-05 10:00:00"', expectBigDif:'1992-12-05 10:00:00 != "1992-12-05 10:00:00"'},
-            {skip:'#14', a: {birth:new Date(1992,11,5,10,0,0)}, b:{birth:'1992-12-05 10:00:00'}, expect:'.birth: 1992-12-05 10:00:00 != "1992-12-05 10:00:00"', expectBigDif:'.birth: 1992-12-05 10:00:00 != "1992-12-05 10:00:00"'},
+            {/*skip:'#14',*/ a: new Date(1993,11,5,10,0,0), b:'1993-12-05 10:00:00', expect:'1993-12-05 10:00:00 != "1993-12-05 10:00:00"', expectBigDif:'1993-12-05 10:00:00 != "1993-12-05 10:00:00"'},
+            {/*skip:'#14',*/ a: {birth:new Date(1992,11,5,10,0,0)}, b:{birth:'1992-12-05 10:00:00'}, expect:'.birth: 1992-12-05 10:00:00 != "1992-12-05 10:00:00"', expectBigDif:'.birth: 1992-12-05 10:00:00 != "1992-12-05 10:00:00"'},
         ].forEach(function(fixture){
             if(fixture.skip){ 
                 it("detect fixture "+fixture.expect);
