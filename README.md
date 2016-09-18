@@ -80,6 +80,7 @@ NPM version | Device                 | OS            | nav
 ------------|------------------------|---------------|---------------
 0.10.0      | HTC Desire             | Android 2.2.2 | Android 2.2.2
 0.10.0      | Samgsung Galaxy Note 4 | Android 5.1.1 | Samsung Internet 4.0.0
+0.10.2      | Samgsung Galaxy Note 4 | Android 6.0.1 | Chrome Mobile 50.0.2661
 0.10.0      | Blue Vivo Air LTE      | Android 5.0.2 | Chrome Mobile 50.0.2661
 0.10.0      | iPad mini Retina       | iOS 8.4.0     | Mobile Safari 8.0.0
 0.10.0      | VMWare                 | WinXP         | IE 8.0.0

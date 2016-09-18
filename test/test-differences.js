@@ -4,8 +4,6 @@
 var expectError;
 var expectEql;
 
-var changing = require('best-globals').changing;
-
 var assert = require('../lib/self-explain.js').assert;
 
 function with_expect(){

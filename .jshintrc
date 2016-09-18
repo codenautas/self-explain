@@ -1,0 +1,8 @@
+{
+    "asi": false,
+    "forin": false,
+    "curly": false,
+    "node": true,
+    "strict": "global",
+    "predef": [ "module", "Promise", "window", "XMLHttpRequest", "ActiveXObject" ]
+}
