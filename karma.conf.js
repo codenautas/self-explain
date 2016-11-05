@@ -23,7 +23,6 @@ module.exports = function(config) {
       'node_modules/esprima/esprima.js',
       'dist/escodegen.browser.js',
       // 'node_modules/js-to-html/js-to-html.js',
-      // 'node_modules/ajax-best-promise/bin/ajax-best-promise.js',
       // 'node_modules/express-useragent/lib/express-useragent.js',
       'lib/*.js',
       'test/*.js'

@@ -13,6 +13,12 @@ engines:
     checks:
       comma-dangle:
         enabled: false
+    exclude_fingerprints:
+    - 49998df13b476c58064f87276d5dd181
+    - ee2b84e8b787d8f82e9d7f11e10595e0
+    - 3b51ec27e4f56ce46491fcb96ff1d0ee
+    - cc9a04e1bfc8b2ba72833788e4db4906    
+    - f6e89108ba1177113c25a6597f68caf5
   fixme:
     enabled: true
 ratings:
