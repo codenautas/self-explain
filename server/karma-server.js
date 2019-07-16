@@ -5,7 +5,7 @@ var app = express();
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
-var fs = require('fs-promise');
+var fs = require('fs-extra');
 var path = require('path');
 var readYaml = require('read-yaml-promise');
 
