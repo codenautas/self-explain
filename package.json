@@ -18,10 +18,10 @@
   },
   "devDependencies": {
     "body-parser": "~1.20.2",
-    "cookie-parser": "~1.4.6",
+    "cookie-parser": "~1.4.7",
     "expect.js": "~0.3.1",
-    "express": "~4.19.2",
-    "express-session": "~1.18.0",
+    "express": "~4.21.1",
+    "express-session": "~1.18.1",
     "express-useragent": "~1.0.15",
     "istanbul": "~0.4.5",
     "karma": "~6.4.3",
